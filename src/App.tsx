@@ -1,24 +1,19 @@
-import { useState } from 'react'
-import { eachDayOfInterval, subDays, addDays, format, isSameDay } from "date-fns";
 import './App.css'
-import { Swiper, SwiperSlide } from 'swiper/react'
-import 'swiper/css'
-import ProgressTracker from './components/progressTracker'
-import DayStreak from './components/daysStreak'
+import { Dashboard } from './pages/dashboard';
+import { Login } from './pages/login';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
 
 
 function App() {
-
-  
-  // const [today, setToday] = useState(new Date())
-
   
   return (
-    <div className='flex flex-col gap-4'>
-      <DayStreak />
-      <ProgressTracker />
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Login />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+      </Routes>
+    </BrowserRouter>
   )
 }
 

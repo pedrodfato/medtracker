@@ -1,9 +1,6 @@
 import { createAuthClient } from "better-auth/react"
-import 'dotenv/config'
 
-const globalProcess = (globalThis as any).process
-const authClient: ReturnType<typeof createAuthClient> = createAuthClient({
-    baseURL: globalProcess?.env?.apiURL
+
+export const authClient = createAuthClient({
+    baseURL: import.meta.env.VITE_API_URL,
 })
-
-export default authClient;

@@ -1,19 +1,13 @@
-import { Button } from "@/components/ui/button"
-import {
-  Card,
-  CardAction,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import {useState} from "react"
+import { useState } from "react"
+import { authClient } from "../lib/auth-client"
+import { useNavigate, Link } from "react-router-dom"; // Dica: use Link no lugar de <a>
+import pill1 from '../assets/pill-1.webp'
+import logo2 from '../assets/logo2.webp'
+import { Button } from '../components/button'
 
 export function Login() {
-
+    const navigate = useNavigate();
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
     const [errorMsg, setErrorMsg] = useState("")
@@ -22,86 +16,66 @@ export function Login() {
         e.preventDefault();
         setErrorMsg("")
 
-        try {
-            const response = await fetch('http://127.0.0.1:3333/login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, password })
-            });
+        const { data, error } = await authClient.signIn.email({
+            email,
+            password,
+        });
 
-        const data = await response.json();
-
-            if (!response.ok) {
-                setErrorMsg(data.error || "Falha na autenticação.");
-                return;
-            }
-
-        localStorage.setItem('@medtracker:token', data.token);
-
-        alert('Login bem-sucedido! Crachá salvo.');
-
-
-        } catch (error) {
-            console.error(error);
-            setErrorMsg("An error occurred while logging in.")
+        if (error) {
+            console.log("Erro ao se conectar com o servidor.", error.message);
+            setErrorMsg("Erro ao se conectar com o servidor.")
+            return;
         }
+        navigate("/dashboard");
     }
 
+    return (
+        <div className="flex flex-col bg-linear-to-b from-[#F2F3F8] to-[#FFFFFF] to-35% min-h-screen items-center justify-around w-full px-4">
+            <img src={logo2} width={200} alt="Logo" />
+            
+            <div className="flex flex-col items-center justify-center w-full max-w-sm px-4">
+                
+                <div className="relative inline-block 
+                    after:content-[''] after:absolute after:-bottom-6 after:left-1/2 after:-translate-x-1/2
+                    after:w-34 after:h-2 after:bg-black/80 after:rounded-full
+                    after:blur-[19px] after:opacity-80">
+                    <img src={pill1} width={130} alt="Pill" className="relative z-10 mb-5" />
+                </div>
+                <h1 className="text-black text-3xl font-regular mb-6 mt-15">Bem-vindo de volta!</h1>
+              
+                <form onSubmit={handleLogin} className="w-full flex flex-col gap-4">
+                    <Input
+                        id="email"
+                        type="email"
+                        placeholder="Endereço de Email"
+                        required
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                    />
+                    <Input
+                        id="password"
+                        type="password"
+                        required
+                        placeholder="Senha"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                    />
+                    
+                    <div className="flex items-center">
+                        <Link to="/esqueci-senha" className="ml-auto inline-block text-sm underline-offset-4 hover:underline">
+                            Esqueceu a senha?
+                        </Link>
+                    </div>
 
+                    {errorMsg && <p className="text-red-500 text-sm text-center">{errorMsg}</p>}
+                    <Button type="submit" className="w-full mt-4">
+                        Login
+                    </Button>
+                    <p className="mt-2 mb-10 text-sm">Não tem uma conta? <Link to="/register" className="text-[#ABD43A] font-bold">Cadastre-se</Link></p>
+                </form>
+            </div>
 
-  return (
-    <div className="flex min-h-screen items-center justify-center bg-background mx-4  ">
-    <Card className="w-full max-w-sm flex ">
-      <CardHeader className="flex-col text-start ">
-        <CardTitle>Login to your account</CardTitle>
-        <CardDescription>
-          Enter your email below to login to your account
-        </CardDescription>
-        <CardAction>
-          <Button variant="link">Sign Up</Button>
-        </CardAction>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleLogin} className="w-full">
-          <div className="flex flex-col gap-6">
-            <div className="grid gap-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="m@example.com"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </div>
-            <div className="grid gap-2">
-              <div className="flex items-center">
-                <Label htmlFor="password">Password</Label>
-                <a
-                  href="#"
-                  className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
-                >
-                  Forgot your password?
-                </a>
-              </div>
-              <Input 
-                id="password" 
-                type="password" 
-                required 
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-            </div>
-          </div>
-          <CardFooter className="flex-col gap-2">
-        <Button type="submit" className="w-full">
-          Login
-        </Button>
-      </CardFooter>
-     </form>
-      </CardContent>
-    </Card>
-    </div>
-  )
+     
+        </div>
+    )
 }

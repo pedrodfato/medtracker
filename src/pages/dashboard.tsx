@@ -1,18 +1,14 @@
 import ProgressTracker from '../components/progressTracker'
 import DayStreak from '../components/daysStreak'
 import { useEffect, useState } from 'react'
+import type { Medication } from '../types/medType';
 
-interface Medication {
-  id: string;
-  name: string;
-  dosage: string;
-  totalPills: number;
-  frequencyHours: number;
-  startDate: Date;
+interface MedicationProps {
+  dados: Medication;
 }
 
 export function Dashboard() {
-    const [medications, setMedications] = useState<Medication[]>([])
+    const [medications, setMedications] = useState<MedicationProps[]>([])
 
     useEffect(() => {
         const loadMedications = async () => {

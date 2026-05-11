@@ -4,6 +4,7 @@ import { Dashboard } from './pages/dashboard';
 import { Login } from './pages/login';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { OnBoarding } from './pages/onBoarding';
+import { MedicationList } from './pages/medicationList';
 
 
 
@@ -15,6 +16,7 @@ function App() {
         <Route path="/" element={<OnBoarding />} />
         <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
         <Route path="/login" element={<Login/>}/>
+        <Route path="/List" element={<MedicationList />} />
       </Routes>
     </BrowserRouter>
   )

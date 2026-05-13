@@ -1,4 +1,5 @@
 export interface Medication {
+  nextDoseAt: string | number | Date;
   id: string;
   name: string;
   dosage: string;

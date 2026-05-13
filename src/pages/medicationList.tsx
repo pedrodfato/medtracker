@@ -8,6 +8,8 @@ import { EllipsisVertical, Search } from "lucide-react";
 export function MedicationList() {
     const [medications, setMedications] = useState<Medication[]>([])
 
+    
+
     useEffect(() => {
         const LoadMedications = async () => {
             try {
@@ -34,7 +36,12 @@ export function MedicationList() {
             <Input className="pl-15" placeholder="Procurar remédios..." />
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 w-full">
-                {medications.map((med) => (
+                {medications.map((med) => {
+                    
+                    const diff = new Date(med.nextDoseAt).getTime() - new Date().getTime();
+                    const hoursLeft = Math.floor(diff / (1000 * 60 * 60));
+
+                    return (
                     <div key={med.id} className="flex bg-white p-4 rounded-lg shadow gap-5 relative">
                         <img src={pill} width={70} alt={med.name} className="rounded-lg bg-red-500 p-3" />
                         <div className="flex flex-col items-start">
@@ -43,11 +50,11 @@ export function MedicationList() {
                         <p className="text-gray-600">{med.frequencyHours} hours</p>
                         </div>
                         <div className="flex flex-1 flex-col items-end justify-between"><EllipsisVertical className="" />
-                        <p className="text-gray-600">Next 09:00am</p>                       
+                        <p className="text-gray-600">Próximo {hoursLeft} </p>                       
                         </div>
-                        {/* <EllipsisVertical className="absolute top-4 right-4" /> */}
                     </div>
-                ))}
+                    );
+                })}
             </div>
         </div>
     )

@@ -10,10 +10,10 @@ export function OnBoarding() {
              <img className="drop-shadow-[0_25px_25px_rgba(0,0,0,0.25)] mb-5" src={pill}  width={230} alt="Pill" />
             <h1 className="text-black text-4xl font-regular">Nunca esqueça seu remédio denovo</h1>
             <p className="text-black text-lg font-regular">Sua companhia pessoal para gerenciar seus remédios diarios, feito para facilitar sua vida</p>
-            <LinkButton to="/login" variant="primary" className="w-full mt-10">
+            <LinkButton to="/register" variant="primary" className="w-full mt-10">
                 Criar Conta
             </LinkButton>
-            <LinkButton to="/register" variant="secondary" className="w-full mt-3">
+            <LinkButton to="/login" variant="secondary" className="w-full mt-3">
                 Eu já tenho uma conta
             </LinkButton>
             </div>

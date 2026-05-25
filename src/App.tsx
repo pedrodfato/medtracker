@@ -7,19 +7,23 @@ import { OnBoarding } from './pages/onBoarding';
 import { MedicationList } from './pages/medicationList';
 import { AddMedication } from './pages/addMedications';
 import { OpenRoute } from './components/OpenRoute';
+import { LogadoLayout } from './layouts/loggedLayout';
 
 
 
 function App() {
-  
+
   return (
+
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<OpenRoute><OnBoarding /></OpenRoute>} />
-        <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
-        <Route path="/login" element={<OpenRoute><Login/></OpenRoute>}/>
-        <Route path="/List" element={<PrivateRoute><MedicationList /></PrivateRoute>} />
-        <Route path="/Add" element={<PrivateRoute><AddMedication /></PrivateRoute>} />
+        <Route path="/login" element={<OpenRoute><Login /></OpenRoute>} />
+        <Route element={<LogadoLayout />}>
+          <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
+          <Route path="/List" element={<PrivateRoute><MedicationList /></PrivateRoute>} />
+          <Route path="/Add" element={<PrivateRoute><AddMedication /></PrivateRoute>} />
+        </Route>
       </Routes>
     </BrowserRouter>
   )

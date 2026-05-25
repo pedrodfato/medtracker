@@ -1,10 +1,10 @@
 export interface Medication {
-  nextDoseAt: string | number | Date;
-  id: string;
-  name: string;
-  dosage: string;
-  totalPills: number;
-  frequencyHours: number;
-  startDate: Date;
-  category: "pills" | "liquids" | "other";
+id: string;
+    name: string;
+    dosage: string;
+    category: 'pill' | 'drop' | 'vitamin';
+    scheduleType: 'fixed' | 'interval';
+    intervalHours: number | null;
+    fixedTime: string | null;
+    nextDoseAt?: string; 
 }

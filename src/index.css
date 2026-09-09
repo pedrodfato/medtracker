@@ -2,6 +2,7 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 @import "@fontsource-variable/inter";
+@import "@fontsource-variable/plus-jakarta-sans";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -19,7 +20,7 @@
     rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
 
   --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
+  --heading: 'Plus Jakarta Sans Variable', system-ui, 'Segoe UI', Roboto, sans-serif;
   --mono: ui-monospace, Consolas, monospace;
 
   font: 18px/145% var(--sans);
@@ -38,29 +39,37 @@
 
   --background: oklch(1 0 0);
 
-  --foreground: oklch(0.145 0 0);
+  --foreground: #1A1C18;
 
   --card: oklch(1 0 0);
 
-  --card-foreground: oklch(0.145 0 0);
+  --card-foreground: #1A1C18;
 
   --popover: oklch(1 0 0);
 
-  --popover-foreground: oklch(0.145 0 0);
+  --popover-foreground: #1A1C18;
 
-  --primary: oklch(0.205 0 0);
+  --primary: #A3D911;
 
-  --primary-foreground: oklch(0.985 0 0);
+  --primary-foreground: #1A1C18;
 
-  --secondary: oklch(0.97 0 0);
+  --secondary: #F4F7ED;
 
-  --secondary-foreground: oklch(0.205 0 0);
+  --secondary-foreground: #1A1C18;
+
+  --tertiary: #E0E9D1;
+
+  --tertiary-foreground: #1A1C18;
+
+  --neutral: #1A1C18;
+
+  --neutral-foreground: #F4F7ED;
 
   --muted: oklch(0.97 0 0);
 
   --muted-foreground: oklch(0.556 0 0);
 
-  --accent-foreground: oklch(0.205 0 0);
+  --accent-foreground: #1A1C18;
 
   --destructive: oklch(0.577 0.245 27.325);
 
@@ -185,8 +194,12 @@
 }
 
 @theme inline {
-  --font-heading: var(--font-sans);
+  --font-heading: 'Plus Jakarta Sans Variable', sans-serif;
   --font-sans: 'Inter Variable', sans-serif;
+  --color-neutral-foreground: var(--neutral-foreground);
+  --color-neutral: var(--neutral);
+  --color-tertiary-foreground: var(--tertiary-foreground);
+  --color-tertiary: var(--tertiary);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);

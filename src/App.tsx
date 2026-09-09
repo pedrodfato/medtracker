@@ -9,6 +9,7 @@ import { MedicationList } from './pages/medicationList';
 import { AddMedication } from './pages/addMedications';
 import { OpenRoute } from './components/OpenRoute';
 import { LogadoLayout } from './layouts/loggedLayout';
+import { Reminder } from './pages/reminder';
 
 
 
@@ -25,6 +26,7 @@ function App() {
           <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
           <Route path="/list" element={<PrivateRoute><MedicationList /></PrivateRoute>} />
           <Route path="/add" element={<PrivateRoute><AddMedication /></PrivateRoute>} />
+          <Route path="/reminder" element={<PrivateRoute><Reminder /></PrivateRoute>} />
         </Route>
       </Routes>
     </BrowserRouter>

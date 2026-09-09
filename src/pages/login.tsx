@@ -1,4 +1,5 @@
 import { Input } from "@/components/ui/input"
+import { Checkbox } from "@/components/ui/checkbox"
 import { useState } from "react"
 import { authClient } from "../lib/auth-client"
 import { useNavigate, Link } from "react-router-dom"; // Dica: use Link no lugar de <a>
@@ -11,6 +12,7 @@ export function Login() {
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
     const [errorMsg, setErrorMsg] = useState("")
+    const [showPassword, setShowPassword] = useState(false)
 
     const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -54,13 +56,20 @@ export function Login() {
                     />
                     <Input
                         id="password"
-                        type="password"
+                        type={showPassword ? "text" : "password"}
                         required
                         placeholder="Senha"
                         value={password}
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
                     />
-                    
+                    <label className="flex items-center gap-2 text-sm text-gray-600 select-none">
+                        <Checkbox
+                            checked={showPassword}
+                            onCheckedChange={(checked) => setShowPassword(checked === true)}
+                        />
+                        Mostrar senha
+                    </label>
+
                     <div className="flex items-center">
                         <Link to="/esqueci-senha" className="ml-auto inline-block text-sm underline-offset-4 hover:underline">
                             Esqueceu a senha?

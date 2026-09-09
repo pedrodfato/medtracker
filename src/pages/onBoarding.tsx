@@ -13,7 +13,7 @@ export function OnBoarding() {
             <LinkButton to="/register" variant="primary" className="w-full mt-10">
                 Criar Conta
             </LinkButton>
-            <LinkButton to="/login" variant="secondary" className="w-full mt-3">
+            <LinkButton to="/login" variant="inverted" className="w-full mt-3">
                 Eu já tenho uma conta
             </LinkButton>
             </div>

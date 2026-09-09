@@ -23,8 +23,8 @@ function App() {
         <Route path="/register" element={<OpenRoute><Register /></OpenRoute>} />
         <Route element={<LogadoLayout />}>
           <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
-          <Route path="/List" element={<PrivateRoute><MedicationList /></PrivateRoute>} />
-          <Route path="/Add" element={<PrivateRoute><AddMedication /></PrivateRoute>} />
+          <Route path="/list" element={<PrivateRoute><MedicationList /></PrivateRoute>} />
+          <Route path="/add" element={<PrivateRoute><AddMedication /></PrivateRoute>} />
         </Route>
       </Routes>
     </BrowserRouter>

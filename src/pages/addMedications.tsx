@@ -38,7 +38,7 @@ export function AddMedication() {
             });
 
             if (!response.ok) throw new Error("Falha ao salvar");
-            navigate("/List"); 
+            navigate("/list"); 
 
         } catch (error) {
             console.error('Erro ao adicionar remédio:', error);
@@ -52,7 +52,7 @@ export function AddMedication() {
             <div className="w-full max-w-md bg-white p-6 rounded-[24px] shadow-sm">
                 <div className="flex justify-between items-center mb-6">
                     <h1 className="text-2xl font-bold text-gray-900">Novo Medicamento</h1>
-                    <Link to="/List" className="text-sm text-gray-500 hover:text-black">Cancelar</Link>
+                    <Link to="/list" className="text-sm text-gray-500 hover:text-black">Cancelar</Link>
                 </div>
 
                 <form onSubmit={handleSubmit} className="flex flex-col gap-5">

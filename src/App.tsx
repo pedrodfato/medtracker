@@ -2,6 +2,7 @@ import './App.css'
 import { PrivateRoute } from './components/PrivateRoute';
 import { Dashboard } from './pages/dashboard';
 import { Login } from './pages/login';
+import { Register } from './pages/register';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { OnBoarding } from './pages/onBoarding';
 import { MedicationList } from './pages/medicationList';
@@ -19,6 +20,7 @@ function App() {
       <Routes>
         <Route path="/" element={<OpenRoute><OnBoarding /></OpenRoute>} />
         <Route path="/login" element={<OpenRoute><Login /></OpenRoute>} />
+        <Route path="/register" element={<OpenRoute><Register /></OpenRoute>} />
         <Route element={<LogadoLayout />}>
           <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
           <Route path="/List" element={<PrivateRoute><MedicationList /></PrivateRoute>} />

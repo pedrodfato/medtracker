@@ -24,8 +24,12 @@ export function Login() {
         });
 
         if (error) {
-            console.log("Erro ao se conectar com o servidor.", error.message);
-            setErrorMsg("Erro ao se conectar com o servidor.")
+            if (error.status === 401) {
+                setErrorMsg("Email ou senha incorretos.")
+            } else {
+                console.error("Erro ao fazer login:", error.status, error.code);
+                setErrorMsg("Erro ao se conectar com o servidor. Tente novamente.")
+            }
             return;
         }
         navigate("/dashboard");

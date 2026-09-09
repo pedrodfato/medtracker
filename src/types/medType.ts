@@ -3,8 +3,9 @@ id: string;
     name: string;
     dosage: string;
     category: 'pill' | 'drop' | 'vitamin';
-    scheduleType: 'fixed' | 'interval';
+    scheduleType: 'fixed' | 'interval' | 'weekly';
     intervalHours: number | null;
     fixedTime: string | null;
-    nextDoseAt?: string; 
+    daysOfWeek?: number[] | null;
+    nextDoseAt?: string;
 }

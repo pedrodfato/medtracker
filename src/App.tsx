@@ -26,8 +26,8 @@ function App() {
           <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
           <Route path="/list" element={<PrivateRoute><MedicationList /></PrivateRoute>} />
           <Route path="/add" element={<PrivateRoute><AddMedication /></PrivateRoute>} />
-          <Route path="/reminder" element={<PrivateRoute><Reminder /></PrivateRoute>} />
         </Route>
+        <Route path="/reminder" element={<PrivateRoute><Reminder /></PrivateRoute>} />
       </Routes>
     </BrowserRouter>
   )

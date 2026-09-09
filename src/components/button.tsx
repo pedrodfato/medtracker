@@ -11,6 +11,7 @@ export function Button({
     variant = 'primary',
     children,
     className = "",
+    ...rest
 }: ButtonProps) {
     const variants = {
         primary: 'bg-primary text-primary-foreground',
@@ -24,6 +25,6 @@ export function Button({
     const selectedVariant = variants[variant];
 
     return (
-        <button type={type} className={`${baseClasses} ${selectedVariant} ${className}`}>{children}</button>
+        <button type={type} className={`${baseClasses} ${selectedVariant} ${className}`} {...rest}>{children}</button>
     );
 }

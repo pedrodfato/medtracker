@@ -4,6 +4,7 @@ import type { Medication } from "../types/medType";
 import pill from "../assets/pill-1.webp"
 import { EllipsisVertical, Pencil, Plus, Search, Trash2 } from "lucide-react";
 import { Link } from "react-router-dom";
+import { API_URL } from "../lib/api";
 
 
 export function MedicationList() {
@@ -20,7 +21,7 @@ export function MedicationList() {
     useEffect(() => {
         const LoadMedications = async () => {
             try {
-                const response = await fetch(`${import.meta.env.VITE_API_URL}/medications`, {
+                const response = await fetch(`${API_URL}/medications`, {
                     method: 'GET',
                     credentials: 'include'
                 });

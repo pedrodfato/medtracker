@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Button } from "../components/button";
+import { API_URL } from "../lib/api";
 
 export function AddMedication() {
     const navigate = useNavigate();
@@ -21,7 +22,7 @@ export function AddMedication() {
         setIsLoading(true);
 
         try {
-            const response = await fetch(`${import.meta.env.VITE_API_URL}/medications`, {
+            const response = await fetch(`${API_URL}/medications`, {
                 method: "POST",
                 credentials: 'include',
                 headers: { "Content-Type": "application/json" },

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import type { Medication } from "../types/medType";
+import { API_URL } from "../lib/api";
 
 
 export function Dashboard() {
@@ -7,7 +8,7 @@ export function Dashboard() {
   
     const fetchMedications = async () => {
         try {
-            const response = await fetch(`${import.meta.env.VITE_API_URL}/medications`, {
+            const response = await fetch(`${API_URL}/medications`, {
                 method: 'GET',
                 credentials: 'include'
             });
@@ -24,7 +25,7 @@ export function Dashboard() {
     useEffect(() => {
         const fetchMedications = async () => {
             try {
-                const response = await fetch(`${import.meta.env.VITE_API_URL}/medications`, {
+                const response = await fetch(`${API_URL}/medications`, {
                     method: 'GET',
                     credentials: 'include'
                 });
@@ -51,7 +52,7 @@ export function Dashboard() {
 
     const handleTakeMedication = async (medId: string) => {
         try {
-            await fetch(`${import.meta.env.VITE_API_URL}/medication/${medId}/take`, {
+            await fetch(`${API_URL}/medication/${medId}/take`, {
                 method: "POST",
                 credentials: 'include',
             });

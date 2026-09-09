@@ -58,12 +58,12 @@ export function AddMedication() {
                  
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Medicamento</label>
-                        <Input required placeholder="Ex: Ritalina" value={name} onChange={(e) => setName(e.target.value)} />
+                        <Input required placeholder="Ex: Ritalina" value={name} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setName(e.target.value)} />
                     </div>
                     
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Dosagem</label>
-                        <Input required placeholder="Ex: 10mg" value={dosage} onChange={(e) => setDosage(e.target.value)} />
+                        <Input required placeholder="Ex: 10mg" value={dosage} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setDosage(e.target.value)} />
                     </div>
 
                     <div>
@@ -85,13 +85,13 @@ export function AddMedication() {
                         {scheduleType === "interval" ? (
                             <div>
                                 <label className="block text-xs text-gray-500 mb-1">A cada quantas horas?</label>
-                                <Input required type="number" min="1" placeholder="Ex: 8" value={intervalHours} onChange={(e) => setIntervalHours(e.target.value)} />
+                                <Input required type="number" min="1" placeholder="Ex: 8" value={intervalHours} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setIntervalHours(e.target.value)} />
                                 <p className="text-xs text-gray-400 mt-2">Ex: Se atrasar a dose, o próximo horário será empurrado para frente.</p>
                             </div>
                         ) : (
                             <div>
                                 <label className="block text-xs text-gray-500 mb-1">Que horas todos os dias?</label>
-                                <Input required type="time" value={fixedTime} onChange={(e) => setFixedTime(e.target.value)} />
+                                <Input required type="time" value={fixedTime} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFixedTime(e.target.value)} />
                                 <p className="text-xs text-gray-400 mt-2">Ex: O horário se mantém sempre o mesmo, não importa o atraso.</p>
                             </div>
                         )}

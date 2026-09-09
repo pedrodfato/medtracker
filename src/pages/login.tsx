@@ -16,7 +16,7 @@ export function Login() {
         e.preventDefault();
         setErrorMsg("")
 
-        const { data, error } = await authClient.signIn.email({
+        const { error } = await authClient.signIn.email({
             email,
             password,
         });
@@ -50,7 +50,7 @@ export function Login() {
                         placeholder="Endereço de Email"
                         required
                         value={email}
-                        onChange={(e) => setEmail(e.target.value)}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
                     />
                     <Input
                         id="password"
@@ -58,7 +58,7 @@ export function Login() {
                         required
                         placeholder="Senha"
                         value={password}
-                        onChange={(e) => setPassword(e.target.value)}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
                     />
                     
                     <div className="flex items-center">

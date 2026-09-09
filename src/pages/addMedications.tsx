@@ -4,23 +4,42 @@ import { Input } from "@/components/ui/input";
 import { Button } from "../components/button";
 import { API_URL } from "../lib/api";
 
+const WEEKDAYS: { label: string; value: number }[] = [
+    { label: "Dom", value: 0 },
+    { label: "Seg", value: 1 },
+    { label: "Ter", value: 2 },
+    { label: "Qua", value: 3 },
+    { label: "Qui", value: 4 },
+    { label: "Sex", value: 5 },
+    { label: "Sab", value: 6 },
+];
+
 export function AddMedication() {
     const navigate = useNavigate();
     const [name, setName] = useState("");
     const [dosage, setDosage] = useState("");
     const [category, setCategory] = useState<"pill" | "drop" | "vitamin">("pill");
-    
-    // NOVOS ESTADOS DO TEMPO
-    const [scheduleType, setScheduleType] = useState<"fixed" | "interval">("interval");
-    const [intervalHours, setIntervalHours] = useState("");
-    const [fixedTime, setFixedTime] = useState("");
-    
+    const [daysOfWeek, setDaysOfWeek] = useState<number[]>([1, 3, 5]);
+    const [fixedTime, setFixedTime] = useState("08:00");
     const [isLoading, setIsLoading] = useState(false);
+    const [errorMsg, setErrorMsg] = useState("");
+
+    const toggleDay = (day: number) => {
+        setDaysOfWeek((prev) =>
+            prev.includes(day) ? prev.filter((d) => d !== day) : [...prev, day].sort((a, b) => a - b)
+        );
+    };
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        setIsLoading(true);
+        setErrorMsg("");
 
+        if (daysOfWeek.length === 0) {
+            setErrorMsg("Selecione pelo menos um dia da semana.");
+            return;
+        }
+
+        setIsLoading(true);
         try {
             const response = await fetch(`${API_URL}/medications`, {
                 method: "POST",
@@ -30,20 +49,21 @@ export function AddMedication() {
                     name,
                     dosage,
                     category,
-                    scheduleType,
-                    intervalHours: scheduleType === "interval" ? Number(intervalHours) : null,
-                    fixedTime: scheduleType === "fixed" ? fixedTime : null,
+                    scheduleType: "weekly",
+                    daysOfWeek,
+                    fixedTime,
                     startDate: new Date().toISOString(),
                 }),
             });
 
             if (!response.ok) throw new Error("Falha ao salvar");
-            navigate("/list"); 
+            navigate("/list");
 
         } catch (error) {
             console.error('Erro ao adicionar remédio:', error);
+            setErrorMsg("Erro ao adicionar remédio.");
         } finally {
-            setIsLoading(false); 
+            setIsLoading(false);
         }
     }
 
@@ -56,12 +76,12 @@ export function AddMedication() {
                 </div>
 
                 <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-                 
+
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Medicamento</label>
                         <Input required placeholder="Ex: Ritalina" value={name} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setName(e.target.value)} />
                     </div>
-                    
+
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Dosagem</label>
                         <Input required placeholder="Ex: 10mg" value={dosage} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setDosage(e.target.value)} />
@@ -77,29 +97,36 @@ export function AddMedication() {
                     </div>
 
                     <div className="bg-gray-50 p-4 rounded-xl border border-gray-100">
-                        <label className="block text-sm font-medium text-gray-700 mb-3">Rotina do Remédio</label>
-                        <div className="flex bg-gray-200 p-1 rounded-lg mb-4">
-                            <button type="button" onClick={() => setScheduleType("interval")} className={`flex-1 py-1.5 text-sm rounded-md transition-all ${scheduleType === "interval" ? "bg-white shadow-sm font-medium text-black" : "text-gray-500"}`}>⏳ Intervalo</button>
-                            <button type="button" onClick={() => setScheduleType("fixed")} className={`flex-1 py-1.5 text-sm rounded-md transition-all ${scheduleType === "fixed" ? "bg-white shadow-sm font-medium text-black" : "text-gray-500"}`}>⏰ Horário Fixo</button>
+                        <label className="block text-sm font-medium text-gray-700 mb-3">Frequência e Horário</label>
+                        <div className="flex justify-between gap-1 mb-4">
+                            {WEEKDAYS.map(({ label, value }) => (
+                                <button
+                                    key={value}
+                                    type="button"
+                                    onClick={() => toggleDay(value)}
+                                    className={`flex-1 py-2 rounded-full text-xs font-medium transition-colors ${
+                                        daysOfWeek.includes(value)
+                                            ? "bg-primary text-primary-foreground"
+                                            : "bg-gray-200 text-gray-500"
+                                    }`}
+                                >
+                                    {label}
+                                </button>
+                            ))}
                         </div>
-
-                        {scheduleType === "interval" ? (
-                            <div>
-                                <label className="block text-xs text-gray-500 mb-1">A cada quantas horas?</label>
-                                <Input required type="number" min="1" placeholder="Ex: 8" value={intervalHours} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setIntervalHours(e.target.value)} />
-                                <p className="text-xs text-gray-400 mt-2">Ex: Se atrasar a dose, o próximo horário será empurrado para frente.</p>
-                            </div>
-                        ) : (
-                            <div>
-                                <label className="block text-xs text-gray-500 mb-1">Que horas todos os dias?</label>
-                                <Input required type="time" value={fixedTime} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFixedTime(e.target.value)} />
-                                <p className="text-xs text-gray-400 mt-2">Ex: O horário se mantém sempre o mesmo, não importa o atraso.</p>
-                            </div>
-                        )}
+                        <label className="block text-xs text-gray-500 mb-1">Horário</label>
+                        <Input required type="time" value={fixedTime} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFixedTime(e.target.value)} />
                     </div>
 
+                    <div className="flex items-center gap-3 bg-tertiary rounded-xl p-4">
+                        <span className="text-2xl" aria-hidden="true">🤖</span>
+                        <p className="text-sm text-tertiary-foreground">Precisa de ajuda para configurar sua dosagem? Só perguntar!</p>
+                    </div>
+
+                    {errorMsg && <p className="text-red-500 text-sm text-center">{errorMsg}</p>}
+
                     <Button type="submit" disabled={isLoading} className="w-full mt-2">
-                        {isLoading ? "Salvando..." : "Adicionar Medicamento"}
+                        {isLoading ? "Salvando..." : "Salvar Medicamento"}
                     </Button>
                 </form>
             </div>

@@ -95,8 +95,8 @@ export function MedicationList() {
                 <Plus className="fixed bottom-28 right-6
 w-14 h-14
 rounded-full
-bg-[#B7E13A]
-text-black
+bg-primary
+text-primary-foreground
 p-3
 shadow-[0_10px_30px_rgba(0,0,0,0.12)]
 backdrop-blur-xl

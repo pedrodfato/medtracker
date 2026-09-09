@@ -10,7 +10,7 @@ export function Menu() {
             <Link to="/dashboard" className="flex flex-col items-center gap-1">
                 <House 
                     size={24} 
-                    className={location.pathname === '/dashboard' ? "text-[#ABD43A]" : "text-gray-400"} 
+                    className={location.pathname === '/dashboard' ? "text-primary" : "text-gray-400"} 
                 />
                 <span className={`text-[10px] font-medium ${location.pathname === '/dashboard' ? 'text-gray-900' : 'text-gray-400'}`}>
                     Home
@@ -20,7 +20,7 @@ export function Menu() {
             <Link to="/list" className="flex flex-col items-center gap-1">
                 <Pill 
                     size={24} 
-                    className={location.pathname === '/list' ? "text-[#ABD43A]" : "text-gray-400"} 
+                    className={location.pathname === '/list' ? "text-primary" : "text-gray-400"} 
                 />
                 <span className={`text-[10px] font-medium ${location.pathname === '/list' ? 'text-gray-900' : 'text-gray-400'}`}>
                     Lista
@@ -30,7 +30,7 @@ export function Menu() {
             <Link to="/progress" className="flex flex-col items-center gap-1">
                 <TrendingUpDown 
                     size={24} 
-                    className={location.pathname === '/progress' ? "text-[#ABD43A]" : "text-gray-400"} 
+                    className={location.pathname === '/progress' ? "text-primary" : "text-gray-400"} 
                 />
                 <span className={`text-[10px] font-medium ${location.pathname === '/progress' ? 'text-gray-900' : 'text-gray-400'}`}>
                     Progresso
@@ -40,7 +40,7 @@ export function Menu() {
             <Link to="/profile" className="flex flex-col items-center gap-1">
                 <User 
                     size={24} 
-                    className={location.pathname === '/profile' ? "text-[#ABD43A]" : "text-gray-400"} 
+                    className={location.pathname === '/profile' ? "text-primary" : "text-gray-400"} 
                 />
                 <span className={`text-[10px] font-medium ${location.pathname === '/profile' ? 'text-gray-900' : 'text-gray-400'}`}>
                     Perfil

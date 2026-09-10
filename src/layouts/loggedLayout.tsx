@@ -4,7 +4,9 @@ import { Menu } from '../components/bottomMenu';
 export function LogadoLayout() {
   return (
     <div>
-      <Outlet /> 
+      <div className="pb-28">
+        <Outlet />
+      </div>
       <Menu />
     </div>
   )

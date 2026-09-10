@@ -7,7 +7,7 @@ export function OnBoarding() {
         <main className="flex flex-col min-h-screen items-center justify-around bg-linear-to-b from-[#EFF7D0] to-[#EFF3F6] to-65% px-8">
             <img src={logo} width={250} alt="Logo" />
             <div className="flex flex-col items-center text-center max-w-md mb-15">
-             <img className="drop-shadow-[0_25px_25px_rgba(0,0,0,0.25)] mb-5 w-[150px] md:w-[200px]" src={pill} alt="Pill" />
+             <img className="drop-shadow-[0_25px_25px_rgba(0,0,0,0.25)] mb-5 w-[100px] md:w-[200px]" src={pill} alt="Pill" />
             <h1 className="text-black text-4xl font-regular">Nunca esqueça do seu remédio denovo</h1>
             <p className="text-black text-lg font-regular">Sua companhia pessoal para gerenciar seus remédios diarios, feito para facilitar sua vida</p>
             <LinkButton to="/register" variant="primary" className="w-full mt-10">

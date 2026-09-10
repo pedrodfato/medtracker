@@ -12,6 +12,7 @@ import { LogadoLayout } from './layouts/loggedLayout';
 import { Reminder } from './pages/reminder';
 import { Progress } from './pages/progress';
 import { Profile } from './pages/profile';
+import { ScrollToTop } from './components/ScrollToTop';
 
 
 
@@ -20,6 +21,7 @@ function App() {
   return (
 
     <BrowserRouter>
+      <ScrollToTop />
       <Routes>
         <Route path="/" element={<OpenRoute><OnBoarding /></OpenRoute>} />
         <Route path="/login" element={<OpenRoute><Login /></OpenRoute>} />

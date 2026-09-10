@@ -172,7 +172,7 @@ export function Dashboard() {
                                     </p>
                                 )}
                                 <Button
-                                    variant="secondary"
+                                    variant={canTakeMedicationNow(med) ? "primary" : "secondary"}
                                     onClick={() => handleTakeMedication(med.id)}
                                     disabled={!canTakeMedicationNow(med)}
                                     className="w-full"

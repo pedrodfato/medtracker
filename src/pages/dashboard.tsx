@@ -4,6 +4,7 @@ import type { Medication } from "../types/medType";
 import { API_URL } from "../lib/api";
 import { authClient } from "../lib/auth-client";
 import { getMedicationVisual, type MedicationCategory } from "../lib/medicationVisuals";
+import { Button } from "../components/button";
 
 type Stats = {
     currentStreak: number;
@@ -61,10 +62,15 @@ export function Dashboard() {
 
     const handleTakeMedication = async (medId: string) => {
         try {
-            await fetch(`${API_URL}/medication/${medId}/take`, {
+            const response = await fetch(`${API_URL}/medication/${medId}/take`, {
                 method: "POST",
                 credentials: 'include',
             });
+            if (!response.ok) {
+                const data = await response.json().catch(() => null);
+                console.error('Erro ao confirmar dose:', data?.error ?? response.status);
+                return;
+            }
             fetchMedications();
             fetchStats();
         } catch (error) {
@@ -79,6 +85,8 @@ export function Dashboard() {
     const hoursUntilNextDose = nextMedication?.nextDoseAt
         ? Math.max(0, Math.round((new Date(nextMedication.nextDoseAt).getTime() - Date.now()) / (1000 * 60 * 60)))
         : null;
+
+    const canTakeNow = !nextMedication?.nextDoseAt || new Date(nextMedication.nextDoseAt).getTime() <= Date.now();
 
     return (
         <main className="bg-linear-to-b from-[#eef1f4] to-[#f7f8fa] to-35% min-h-screen p-6 gap-5 flex flex-col">
@@ -137,12 +145,19 @@ export function Dashboard() {
                                 </div>
                             </div>
                         </button>
-                        <button
+                        {nextMedication.lastTakenAt && (
+                            <p className="text-xs text-gray-400 mb-3 -mt-2">
+                                Última dose: {new Date(nextMedication.lastTakenAt).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}
+                            </p>
+                        )}
+                        <Button
+                            variant="secondary"
                             onClick={() => handleTakeMedication(nextMedication.id)}
-                            className="w-full py-3 bg-[#F2F3F5] hover:bg-[#E5E7EB] text-black font-medium rounded-xl transition-colors active:scale-[0.98]"
+                            disabled={!canTakeNow}
+                            className="w-full"
                         >
-                            Confirmar dose
-                        </button>
+                            {canTakeNow ? "Confirmar dose" : "Próxima dose ainda não disponível"}
+                        </Button>
                         </>
                 ) : (
                     <div className="bg-white p-6 rounded-[24px] text-center border border-dashed border-gray-300 w-full">

@@ -7,5 +7,6 @@ id: string;
     intervalHours: number | null;
     fixedTime: string | null;
     daysOfWeek?: number[] | null;
+    lastTakenAt?: string | null;
     nextDoseAt?: string;
 }

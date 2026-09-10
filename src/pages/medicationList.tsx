@@ -21,6 +21,7 @@ export function MedicationList() {
     const [activeCategory, setActiveCategory] = useState<MedicationCategory | null>(null);
     const [medicationToDelete, setMedicationToDelete] = useState<Medication | null>(null);
     const [isDeleting, setIsDeleting] = useState(false);
+    const [deleteError, setDeleteError] = useState("");
 
     const toggleMenu = (id: string) => {
         setOpenMenuId(openMenuId === id ? null : id);
@@ -53,6 +54,7 @@ export function MedicationList() {
     const handleDelete = async () => {
         if (!medicationToDelete) return;
         setIsDeleting(true);
+        setDeleteError("");
         try {
             const response = await fetch(`${API_URL}/medications/${medicationToDelete.id}`, {
                 method: "DELETE",
@@ -60,12 +62,18 @@ export function MedicationList() {
             });
             if (!response.ok) throw new Error("Falha ao excluir");
             setMedications((prev) => prev.filter((m) => m.id !== medicationToDelete.id));
+            setMedicationToDelete(null);
         } catch (error) {
             console.error('Erro ao excluir remédio:', error);
+            setDeleteError("Não foi possível excluir. Tente novamente.");
         } finally {
             setIsDeleting(false);
-            setMedicationToDelete(null);
         }
+    };
+
+    const closeDeleteDialog = () => {
+        setMedicationToDelete(null);
+        setDeleteError("");
     };
 
     const filteredMedications = medications.filter((med) => {
@@ -176,12 +184,13 @@ active:scale-95 z-50" /></Link>
                         <p className="text-gray-600 text-sm mb-6">
                             Tem certeza que deseja excluir <strong>{medicationToDelete.name}</strong>? Essa ação não pode ser desfeita.
                         </p>
+                        {deleteError && <p className="text-red-500 text-sm mb-4">{deleteError}</p>}
                         <div className="flex gap-3">
                             <Button
                                 type="button"
                                 variant="secondary"
                                 className="flex-1"
-                                onClick={() => setMedicationToDelete(null)}
+                                onClick={closeDeleteDialog}
                                 disabled={isDeleting}
                             >
                                 Cancelar

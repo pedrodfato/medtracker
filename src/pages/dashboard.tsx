@@ -138,7 +138,8 @@ export function Dashboard() {
                         modules={[Pagination]}
                         pagination={{ clickable: true }}
                         onSlideChange={(swiper) => setActiveMedicationIndex(swiper.activeIndex)}
-                        className="w-full pb-8"
+                        className="w-full"
+                        style={{ paddingBottom: '2rem' }}
                     >
                         {sortedMedications.map((med) => (
                             <SwiperSlide key={med.id}>
@@ -201,7 +202,7 @@ export function Dashboard() {
                         {stats?.overall.missedByMedication && stats.overall.missedByMedication.length > 0 && (
                             <div className="mt-2 flex flex-col gap-0.5">
                                 {stats.overall.missedByMedication.map((entry) => {
-                                    const med = medications.find((m) => m.id === String(entry.medicationId));
+                                    const med = medications.find((m) => Number(m.id) === entry.medicationId);
                                     return (
                                         <p key={entry.medicationId} className="text-xs text-gray-500 truncate">
                                             {med?.name ?? "Remédio"}: {entry.missedCount}

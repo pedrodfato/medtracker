@@ -45,7 +45,7 @@ export function Login() {
                     after:content-[''] after:absolute after:-bottom-6 after:left-1/2 after:-translate-x-1/2
                     after:w-34 after:h-2 after:bg-black/80 after:rounded-full
                     after:blur-[19px] after:opacity-80">
-                    <img src={pill1} width={130} alt="Pill" className="relative z-10 mb-5" />
+                    <img src={pill1} alt="Pill" className="relative z-10 mb-5 w-[100px] md:w-[200px]" />
                 </div>
                 <h1 className="text-black text-3xl font-regular mb-6 mt-15">Bem-vindo de volta!</h1>
               

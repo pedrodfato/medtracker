@@ -86,7 +86,7 @@ export function Dashboard() {
         ? Math.max(0, Math.round((new Date(nextMedication.nextDoseAt).getTime() - Date.now()) / (1000 * 60 * 60)))
         : null;
 
-    const canTakeNow = !nextMedication?.nextDoseAt || new Date(nextMedication.nextDoseAt).getTime() <= Date.now();
+    const canTakeNow = !nextMedication?.lastTakenAt || !nextMedication?.nextDoseAt || new Date(nextMedication.nextDoseAt).getTime() <= Date.now();
 
     return (
         <main className="bg-linear-to-b from-[#eef1f4] to-[#f7f8fa] to-35% min-h-screen p-6 gap-5 flex flex-col">

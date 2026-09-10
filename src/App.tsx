@@ -11,6 +11,7 @@ import { OpenRoute } from './components/OpenRoute';
 import { LogadoLayout } from './layouts/loggedLayout';
 import { Reminder } from './pages/reminder';
 import { Progress } from './pages/progress';
+import { Profile } from './pages/profile';
 
 
 
@@ -28,6 +29,7 @@ function App() {
           <Route path="/list" element={<PrivateRoute><MedicationList /></PrivateRoute>} />
           <Route path="/add" element={<PrivateRoute><AddMedication /></PrivateRoute>} />
           <Route path="/progress" element={<PrivateRoute><Progress /></PrivateRoute>} />
+          <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
         </Route>
         <Route path="/reminder" element={<PrivateRoute><Reminder /></PrivateRoute>} />
       </Routes>

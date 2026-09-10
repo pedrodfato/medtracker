@@ -128,10 +128,10 @@ export function MedicationList() {
                                 <h3 className="text-[18px] font-semibold tracking-tight">{med.name}</h3>
                                 <p className="text-gray-600">{med.dosage}</p>
                                 <p className="text-gray-600">{med.scheduleType === 'fixed'
-                                    ? 'Daily'
+                                    ? 'Diário'
                                     : med.scheduleType === 'weekly'
                                         ? 'Semanal'
-                                        : `${med.intervalHours} - ${med.intervalHours} hours`
+                                        : `A cada ${med.intervalHours}h`
                                 }</p>
                             </div>
                             <div className="flex flex-1 flex-col items-end justify-between"><button onClick={() => toggleMenu(med.id)}><EllipsisVertical className="" /></button>

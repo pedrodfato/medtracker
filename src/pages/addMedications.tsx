@@ -24,8 +24,10 @@ export function AddMedication() {
     const [name, setName] = useState(editingMedication?.name ?? "");
     const [dosage, setDosage] = useState(editingMedication?.dosage ?? "");
     const [category, setCategory] = useState<"pill" | "drop" | "vitamin">(editingMedication?.category ?? "pill");
+    const [scheduleType, setScheduleType] = useState<"fixed" | "weekly" | "interval">(editingMedication?.scheduleType ?? "fixed");
     const [daysOfWeek, setDaysOfWeek] = useState<number[]>(editingMedication?.daysOfWeek ?? [1, 3, 5]);
     const [fixedTime, setFixedTime] = useState(editingMedication?.fixedTime ?? "08:00");
+    const [intervalHours, setIntervalHours] = useState(editingMedication?.intervalHours?.toString() ?? "8");
     const [isLoading, setIsLoading] = useState(false);
     const [errorMsg, setErrorMsg] = useState("");
 
@@ -39,8 +41,14 @@ export function AddMedication() {
         e.preventDefault();
         setErrorMsg("");
 
-        if (daysOfWeek.length === 0) {
+        if (scheduleType === "weekly" && daysOfWeek.length === 0) {
             setErrorMsg("Selecione pelo menos um dia da semana.");
+            return;
+        }
+
+        const parsedIntervalHours = parseInt(intervalHours, 10);
+        if (scheduleType === "interval" && (!parsedIntervalHours || parsedIntervalHours < 1)) {
+            setErrorMsg("Informe um intervalo válido, em horas.");
             return;
         }
 
@@ -50,19 +58,28 @@ export function AddMedication() {
                 ? `${API_URL}/medications/${editingMedication!.id}`
                 : `${API_URL}/medications`;
 
+            const body: Record<string, unknown> = {
+                name,
+                dosage,
+                category,
+                scheduleType,
+                startDate: new Date().toISOString(),
+            };
+
+            if (scheduleType === "fixed") {
+                body.fixedTime = fixedTime;
+            } else if (scheduleType === "weekly") {
+                body.fixedTime = fixedTime;
+                body.daysOfWeek = daysOfWeek;
+            } else {
+                body.intervalHours = parsedIntervalHours;
+            }
+
             const response = await fetch(url, {
                 method: isEditMode ? "PATCH" : "POST",
                 credentials: 'include',
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    name,
-                    dosage,
-                    category,
-                    scheduleType: "weekly",
-                    daysOfWeek,
-                    fixedTime,
-                    startDate: new Date().toISOString(),
-                }),
+                body: JSON.stringify(body),
             });
 
             if (!response.ok) throw new Error(isEditMode ? "Falha ao atualizar" : "Falha ao salvar");
@@ -107,24 +124,66 @@ export function AddMedication() {
 
                     <div className="bg-gray-50 p-4 rounded-xl border border-gray-100">
                         <label className="block text-sm font-medium text-gray-700 mb-3">Frequência e Horário</label>
-                        <div className="flex justify-between gap-1 mb-4">
-                            {WEEKDAYS.map(({ label, value }) => (
-                                <button
-                                    key={value}
-                                    type="button"
-                                    onClick={() => toggleDay(value)}
-                                    className={`flex-1 py-2 rounded-full text-xs font-medium transition-colors ${
-                                        daysOfWeek.includes(value)
-                                            ? "bg-primary text-primary-foreground"
-                                            : "bg-gray-200 text-gray-500"
-                                    }`}
-                                >
-                                    {label}
-                                </button>
-                            ))}
+
+                        <div className="flex gap-2 mb-4">
+                            <button
+                                type="button"
+                                onClick={() => setScheduleType("fixed")}
+                                className={`flex-1 py-2 rounded-lg text-xs font-medium transition-colors border ${scheduleType === "fixed" ? "bg-primary/20 border-primary text-green-800" : "bg-white border-gray-200 text-gray-500"}`}
+                            >
+                                Todo dia
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => setScheduleType("weekly")}
+                                className={`flex-1 py-2 rounded-lg text-xs font-medium transition-colors border ${scheduleType === "weekly" ? "bg-primary/20 border-primary text-green-800" : "bg-white border-gray-200 text-gray-500"}`}
+                            >
+                                Dias específicos
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => setScheduleType("interval")}
+                                className={`flex-1 py-2 rounded-lg text-xs font-medium transition-colors border ${scheduleType === "interval" ? "bg-primary/20 border-primary text-green-800" : "bg-white border-gray-200 text-gray-500"}`}
+                            >
+                                A cada X horas
+                            </button>
                         </div>
-                        <label className="block text-xs text-gray-500 mb-1">Horário</label>
-                        <Input required type="time" value={fixedTime} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFixedTime(e.target.value)} />
+
+                        {scheduleType === "weekly" && (
+                            <div className="flex justify-between gap-1 mb-4">
+                                {WEEKDAYS.map(({ label, value }) => (
+                                    <button
+                                        key={value}
+                                        type="button"
+                                        onClick={() => toggleDay(value)}
+                                        className={`flex-1 py-2 rounded-full text-xs font-medium transition-colors ${
+                                            daysOfWeek.includes(value)
+                                                ? "bg-primary text-primary-foreground"
+                                                : "bg-gray-200 text-gray-500"
+                                        }`}
+                                    >
+                                        {label}
+                                    </button>
+                                ))}
+                            </div>
+                        )}
+
+                        {(scheduleType === "fixed" || scheduleType === "weekly") && (
+                            <>
+                                <label className="block text-xs text-gray-500 mb-1">Horário</label>
+                                <Input required type="time" value={fixedTime} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFixedTime(e.target.value)} />
+                            </>
+                        )}
+
+                        {scheduleType === "interval" && (
+                            <>
+                                <label className="block text-xs text-gray-500 mb-1">Repetir a cada quantas horas?</label>
+                                <div className="flex items-center gap-2">
+                                    <Input required type="number" min={1} max={24} value={intervalHours} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setIntervalHours(e.target.value)} className="max-w-24" />
+                                    <span className="text-sm text-gray-500">horas</span>
+                                </div>
+                            </>
+                        )}
                     </div>
 
                     <div className="flex items-center gap-3 bg-tertiary rounded-xl p-4">

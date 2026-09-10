@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Button } from "../components/button";
 import { API_URL } from "../lib/api";
+import type { Medication } from "../types/medType";
 
 const WEEKDAYS: { label: string; value: number }[] = [
     { label: "Dom", value: 0 },
@@ -16,11 +17,15 @@ const WEEKDAYS: { label: string; value: number }[] = [
 
 export function AddMedication() {
     const navigate = useNavigate();
-    const [name, setName] = useState("");
-    const [dosage, setDosage] = useState("");
-    const [category, setCategory] = useState<"pill" | "drop" | "vitamin">("pill");
-    const [daysOfWeek, setDaysOfWeek] = useState<number[]>([1, 3, 5]);
-    const [fixedTime, setFixedTime] = useState("08:00");
+    const location = useLocation();
+    const editingMedication = (location.state as { medication?: Medication } | null)?.medication;
+    const isEditMode = !!editingMedication;
+
+    const [name, setName] = useState(editingMedication?.name ?? "");
+    const [dosage, setDosage] = useState(editingMedication?.dosage ?? "");
+    const [category, setCategory] = useState<"pill" | "drop" | "vitamin">(editingMedication?.category ?? "pill");
+    const [daysOfWeek, setDaysOfWeek] = useState<number[]>(editingMedication?.daysOfWeek ?? [1, 3, 5]);
+    const [fixedTime, setFixedTime] = useState(editingMedication?.fixedTime ?? "08:00");
     const [isLoading, setIsLoading] = useState(false);
     const [errorMsg, setErrorMsg] = useState("");
 
@@ -41,8 +46,12 @@ export function AddMedication() {
 
         setIsLoading(true);
         try {
-            const response = await fetch(`${API_URL}/medications`, {
-                method: "POST",
+            const url = isEditMode
+                ? `${API_URL}/medications/${editingMedication!.id}`
+                : `${API_URL}/medications`;
+
+            const response = await fetch(url, {
+                method: isEditMode ? "PATCH" : "POST",
                 credentials: 'include',
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -56,12 +65,12 @@ export function AddMedication() {
                 }),
             });
 
-            if (!response.ok) throw new Error("Falha ao salvar");
+            if (!response.ok) throw new Error(isEditMode ? "Falha ao atualizar" : "Falha ao salvar");
             navigate("/list");
 
         } catch (error) {
-            console.error('Erro ao adicionar remédio:', error);
-            setErrorMsg("Erro ao adicionar remédio.");
+            console.error('Erro ao salvar remédio:', error);
+            setErrorMsg(isEditMode ? "Erro ao atualizar remédio." : "Erro ao adicionar remédio.");
         } finally {
             setIsLoading(false);
         }
@@ -71,7 +80,7 @@ export function AddMedication() {
         <main className="bg-[#F7F8FA] min-h-screen py-6 flex flex-col items-center justify-center">
             <div className="w-full max-w-md bg-white p-6 rounded-[24px] shadow-sm">
                 <div className="flex justify-between items-center mb-6">
-                    <h1 className="text-2xl font-bold text-gray-900">Novo Medicamento</h1>
+                    <h1 className="text-2xl font-bold text-gray-900">{isEditMode ? "Editar Medicamento" : "Novo Medicamento"}</h1>
                     <Link to="/list" className="text-sm text-gray-500 hover:text-black">Cancelar</Link>
                 </div>
 
@@ -126,7 +135,7 @@ export function AddMedication() {
                     {errorMsg && <p className="text-red-500 text-sm text-center">{errorMsg}</p>}
 
                     <Button type="submit" disabled={isLoading} className="w-full mt-2">
-                        {isLoading ? "Salvando..." : "Salvar Medicamento"}
+                        {isLoading ? "Salvando..." : isEditMode ? "Salvar Alterações" : "Salvar Medicamento"}
                     </Button>
                 </form>
             </div>

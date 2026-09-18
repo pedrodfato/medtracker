@@ -8,6 +8,7 @@ import type { Medication } from "../types/medType";
 import { API_URL } from "../lib/api";
 import { authClient } from "../lib/auth-client";
 import { getMedicationVisual, type MedicationCategory } from "../lib/medicationVisuals";
+import { formatTimeUntilNextDose } from "../lib/formatTimeUntilNextDose";
 import { Button } from "../components/button";
 
 type Stats = {
@@ -94,9 +95,7 @@ export function Dashboard() {
         if (activeMedication) navigate("/reminder", { state: { medication: activeMedication } });
     };
 
-    const hoursUntilNextDose = activeMedication?.nextDoseAt
-        ? Math.max(0, Math.round((new Date(activeMedication.nextDoseAt).getTime() - Date.now()) / (1000 * 60 * 60)))
-        : null;
+    const timeUntilNextDose = formatTimeUntilNextDose(activeMedication?.nextDoseAt ?? null);
 
     const canTakeMedicationNow = (med: Medication) =>
         !med.lastTakenAt || !med.nextDoseAt || new Date(med.nextDoseAt).getTime() <= Date.now();
@@ -127,7 +126,7 @@ export function Dashboard() {
 
                 <div className="w-full flex justify-between text-sm text-gray-600">
                     <span>Próxima Dose em</span>
-                    <span className="font-medium text-gray-900">{hoursUntilNextDose !== null ? `${hoursUntilNextDose}h` : "-"}</span>
+                    <span className="font-medium text-gray-900">{timeUntilNextDose ?? "-"}</span>
                 </div>
             </div>
 

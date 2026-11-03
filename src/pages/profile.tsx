@@ -11,17 +11,29 @@ const TIMEZONE_OPTIONS = [
     { value: "America/Noronha", label: "Fernando de Noronha" },
 ];
 
+const REMINDER_LEAD_OPTIONS = [
+    { value: 0, label: "Na hora" },
+    { value: 5, label: "5 minutos antes" },
+    { value: 10, label: "10 minutos antes" },
+    { value: 15, label: "15 minutos antes" },
+    { value: 30, label: "30 minutos antes" },
+    { value: 60, label: "1 hora antes" },
+];
+
 export function Profile() {
     const navigate = useNavigate();
     const { data: session, refetch } = authClient.useSession();
     const [isEditingName, setIsEditingName] = useState(false);
     const [nameInput, setNameInput] = useState("");
     const [isEditingTimezone, setIsEditingTimezone] = useState(false);
-    const [showAlertNotice, setShowAlertNotice] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
 
     const userTimezone = (session?.user as { timezone?: string } | undefined)?.timezone ?? "America/Sao_Paulo";
     const timezoneLabel = TIMEZONE_OPTIONS.find((tz) => tz.value === userTimezone)?.label ?? "Horário de Brasília (SP)";
+
+    const reminderUser = session?.user as { reminderEnabled?: boolean; reminderLeadMinutes?: number } | undefined;
+    const reminderEnabled = reminderUser?.reminderEnabled ?? true;
+    const reminderLeadMinutes = reminderUser?.reminderLeadMinutes ?? 10;
 
     const startEditingName = () => {
         setNameInput(session?.user?.name ?? "");
@@ -50,6 +62,18 @@ export function Profile() {
             setIsEditingTimezone(false);
         } catch (error) {
             console.error('Erro ao atualizar fuso horário:', error);
+        } finally {
+            setIsSaving(false);
+        }
+    };
+
+    const updateReminders = async (data: { reminderEnabled?: boolean; reminderLeadMinutes?: number }) => {
+        setIsSaving(true);
+        try {
+            await authClient.updateUser(data);
+            await refetch?.();
+        } catch (error) {
+            console.error('Erro ao atualizar lembretes:', error);
         } finally {
             setIsSaving(false);
         }
@@ -118,16 +142,40 @@ export function Profile() {
                     <span className="font-medium text-gray-900">Meus Dados</span>
                 </button>
 
-                <button
-                    onClick={() => setShowAlertNotice(true)}
-                    className="p-4 rounded-[20px] bg-white/70 shadow-[0_4px_20px_rgba(0,0,0,0.06)] flex items-center gap-3 text-left"
-                >
-                    <div className="w-10 h-10 rounded-full bg-tertiary flex items-center justify-center text-lg shrink-0">
-                        🔔
+                <div className="p-4 rounded-[20px] bg-white/70 shadow-[0_4px_20px_rgba(0,0,0,0.06)] flex flex-col gap-2">
+                    <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-tertiary flex items-center justify-center text-lg shrink-0">
+                            🔔
+                        </div>
+                        <div className="flex-1">
+                            <p className="font-medium text-gray-900">Lembretes por e-mail</p>
+                            <p className="text-xs text-gray-500">{reminderEnabled ? "Ligados" : "Desligados"}</p>
+                        </div>
+                        <button
+                            type="button"
+                            role="switch"
+                            aria-checked={reminderEnabled}
+                            aria-label="Receber lembretes por e-mail"
+                            onClick={() => updateReminders({ reminderEnabled: !reminderEnabled })}
+                            disabled={isSaving}
+                            className={`relative w-12 h-7 rounded-full transition-colors shrink-0 ${reminderEnabled ? "bg-primary" : "bg-gray-300"}`}
+                        >
+                            <span className={`absolute top-1 left-1 w-5 h-5 rounded-full bg-white transition-transform ${reminderEnabled ? "translate-x-5" : ""}`} />
+                        </button>
                     </div>
-                    <span className="font-medium text-gray-900 flex-1">Preferências de Alerta</span>
-                    {showAlertNotice && <span className="text-xs text-gray-400">Em breve</span>}
-                </button>
+                    <label className="text-xs text-gray-500 mt-2" htmlFor="reminder-lead">Avisar com antecedência de</label>
+                    <select
+                        id="reminder-lead"
+                        value={reminderLeadMinutes}
+                        onChange={(e) => updateReminders({ reminderLeadMinutes: Number(e.target.value) })}
+                        disabled={isSaving || !reminderEnabled}
+                        className="w-full rounded-full border border-input px-4 py-2 text-sm bg-transparent disabled:opacity-50"
+                    >
+                        {REMINDER_LEAD_OPTIONS.map((option) => (
+                            <option key={option.value} value={option.value}>{option.label}</option>
+                        ))}
+                    </select>
+                </div>
 
                 <div className="p-4 rounded-[20px] bg-white/70 shadow-[0_4px_20px_rgba(0,0,0,0.06)] flex flex-col gap-2">
                     <button

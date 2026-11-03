@@ -17,6 +17,14 @@ export const authClient = createAuthClient({
                     type: "string",
                     required: false,
                 },
+                reminderEnabled: {
+                    type: "boolean",
+                    required: false,
+                },
+                reminderLeadMinutes: {
+                    type: "number",
+                    required: false,
+                },
             },
         }),
     ],

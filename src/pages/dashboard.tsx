@@ -30,6 +30,8 @@ export function Dashboard() {
     const [medications, setMedications] = useState<Medication[]>([]);
     const [stats, setStats] = useState<DashboardStats | null>(null);
     const [activeMedicationIndex, setActiveMedicationIndex] = useState(0);
+    const [undoTarget, setUndoTarget] = useState<Medication | null>(null);
+    const [isUndoing, setIsUndoing] = useState(false);
 
     const fetchMedications = async () => {
         try {
@@ -92,7 +94,7 @@ export function Dashboard() {
     };
 
     const handleUndoMedication = async (medId: string) => {
-        if (!window.confirm("Desfazer o registro da última dose?")) return;
+        setIsUndoing(true);
         try {
             const response = await fetch(`${API_URL}/medication/${medId}/take`, {
                 method: "DELETE",
@@ -107,6 +109,9 @@ export function Dashboard() {
             fetchStats();
         } catch (error) {
             console.error(error);
+        } finally {
+            setIsUndoing(false);
+            setUndoTarget(null);
         }
     };
 
@@ -199,7 +204,7 @@ export function Dashboard() {
                                 </Button>
                                 {med.lastTakenAt && (
                                     <button
-                                        onClick={() => handleUndoMedication(med.id)}
+                                        onClick={() => setUndoTarget(med)}
                                         className="w-full mt-2 text-sm text-gray-500 underline"
                                     >
                                         Marquei por engano? Desfazer última dose
@@ -240,6 +245,45 @@ export function Dashboard() {
                     </div>
                 </div>
             </div>
+
+            {undoTarget && (
+                <div
+                    className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-6"
+                    onClick={() => !isUndoing && setUndoTarget(null)}
+                >
+                    <div
+                        role="dialog"
+                        aria-modal="true"
+                        aria-labelledby="undo-dose-title"
+                        className="w-full max-w-sm rounded-[24px] bg-white p-6 shadow-xl flex flex-col gap-4"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <h2 id="undo-dose-title" className="text-lg font-semibold text-gray-900">
+                            Desfazer última dose?
+                        </h2>
+                        <p className="text-gray-600">
+                            O registro da última dose de <strong>{undoTarget.name}</strong> será removido.
+                        </p>
+                        <div className="flex gap-3">
+                            <Button
+                                variant="outline"
+                                className="flex-1"
+                                onClick={() => setUndoTarget(null)}
+                                disabled={isUndoing}
+                            >
+                                Não
+                            </Button>
+                            <Button
+                                className="flex-1"
+                                onClick={() => handleUndoMedication(undoTarget.id)}
+                                disabled={isUndoing}
+                            >
+                                Sim
+                            </Button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </main>
     );
 }

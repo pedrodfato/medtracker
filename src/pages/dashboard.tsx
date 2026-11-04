@@ -91,6 +91,25 @@ export function Dashboard() {
         }
     };
 
+    const handleUndoMedication = async (medId: string) => {
+        if (!window.confirm("Desfazer o registro da última dose?")) return;
+        try {
+            const response = await fetch(`${API_URL}/medication/${medId}/take`, {
+                method: "DELETE",
+                credentials: 'include',
+            });
+            if (!response.ok) {
+                const data = await response.json().catch(() => null);
+                console.error('Erro ao desfazer dose:', data?.error ?? response.status);
+                return;
+            }
+            fetchMedications();
+            fetchStats();
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
     const openReminder = () => {
         if (activeMedication) navigate("/reminder", { state: { medication: activeMedication } });
     };
@@ -178,6 +197,14 @@ export function Dashboard() {
                                 >
                                     {canTakeMedicationNow(med) ? "Confirmar dose" : "Próxima dose ainda não disponível"}
                                 </Button>
+                                {med.lastTakenAt && (
+                                    <button
+                                        onClick={() => handleUndoMedication(med.id)}
+                                        className="w-full mt-2 text-sm text-gray-500 underline"
+                                    >
+                                        Marquei por engano? Desfazer última dose
+                                    </button>
+                                )}
                             </SwiperSlide>
                         ))}
                     </Swiper>

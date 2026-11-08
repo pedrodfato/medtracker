@@ -28,6 +28,7 @@ export function AddMedication() {
     const [daysOfWeek, setDaysOfWeek] = useState<number[]>(editingMedication?.daysOfWeek ?? [1, 3, 5]);
     const [fixedTime, setFixedTime] = useState(editingMedication?.fixedTime ?? "08:00");
     const [intervalHours, setIntervalHours] = useState(editingMedication?.intervalHours?.toString() ?? "8");
+    const [durationDays, setDurationDays] = useState(editingMedication?.durationDays?.toString() ?? "");
     const [isLoading, setIsLoading] = useState(false);
     const [errorMsg, setErrorMsg] = useState("");
 
@@ -52,6 +53,17 @@ export function AddMedication() {
             return;
         }
 
+        // Na edição, deixar vazio mantém a duração atual (remédios antigos não têm uma).
+        const parsedDuration = durationDays.trim() === "" ? null : Number(durationDays);
+        if (parsedDuration === null && !isEditMode) {
+            setErrorMsg("Informe por quantos dias você vai tomar o remédio.");
+            return;
+        }
+        if (parsedDuration !== null && (!Number.isInteger(parsedDuration) || parsedDuration < 1 || parsedDuration > 365)) {
+            setErrorMsg("A duração deve ser um número inteiro de 1 a 365 dias.");
+            return;
+        }
+
         setIsLoading(true);
         try {
             const url = isEditMode
@@ -65,6 +77,10 @@ export function AddMedication() {
                 scheduleType,
                 startDate: new Date().toISOString(),
             };
+
+            if (parsedDuration !== null) {
+                body.durationDays = parsedDuration;
+            }
 
             if (scheduleType === "fixed") {
                 body.fixedTime = fixedTime;
@@ -120,6 +136,24 @@ export function AddMedication() {
                             <button type="button" onClick={() => setCategory("drop")} className={`flex-1 py-2 rounded-lg text-sm transition-colors border ${category === "drop" ? "bg-orange-100 border-orange-400 text-orange-800 font-medium" : "bg-gray-50 border-gray-200 text-gray-500"}`}>💧 Gota</button>
                             <button type="button" onClick={() => setCategory("vitamin")} className={`flex-1 py-2 rounded-lg text-sm transition-colors border ${category === "vitamin" ? "bg-yellow-100 border-yellow-400 text-yellow-800 font-medium" : "bg-gray-50 border-gray-200 text-gray-500"}`}>☀️ Vitamina</button>
                         </div>
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Por quantos dias?</label>
+                        <div className="flex items-center gap-2">
+                            <Input
+                                required={!isEditMode}
+                                type="number"
+                                min={1}
+                                max={365}
+                                placeholder="Ex: 10"
+                                value={durationDays}
+                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setDurationDays(e.target.value)}
+                                className="max-w-24"
+                            />
+                            <span className="text-sm text-gray-500">dias</span>
+                        </div>
+                        <p className="text-xs text-gray-500 mt-1">Conforme a receita. Hoje conta como o dia 1.</p>
                     </div>
 
                     <div className="bg-gray-50 p-4 rounded-xl border border-gray-100">

@@ -1,3 +1,11 @@
+export interface TreatmentSummary {
+    expected: number;
+    taken: number;
+    perfect: boolean;
+    missedDays: { date: string; missed: number; expected: number }[];
+    dismissed: boolean;
+}
+
 export interface Medication {
 id: string;
     name: string;
@@ -9,4 +17,7 @@ id: string;
     daysOfWeek?: number[] | null;
     lastTakenAt?: string | null;
     nextDoseAt?: string;
+    durationDays?: number | null;
+    completed?: boolean;
+    treatmentSummary?: TreatmentSummary | null;
 }

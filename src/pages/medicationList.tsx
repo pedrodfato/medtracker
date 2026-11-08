@@ -155,11 +155,17 @@ export function MedicationList() {
                                         </button>
                                     </div>
                                 )}
-                                <p className="text-gray-600 capitalize">Próximo: {med.nextDoseAt ? new Date(med.nextDoseAt).toLocaleTimeString("pt-BR", {
+                                {med.completed && med.treatmentSummary ? (
+                                    <p className="text-right text-sm font-medium text-green-700">
+                                        Concluído · {med.treatmentSummary.taken}/{med.treatmentSummary.expected} doses
+                                    </p>
+                                ) : (
+                                    <p className="text-gray-600 capitalize">Próximo: {med.nextDoseAt ? new Date(med.nextDoseAt).toLocaleTimeString("pt-BR", {
   hour: "2-digit",
   minute: "2-digit",
   hour12: true
 }) : "Aguardando"} </p>
+                                )}
                             </div>
                         </div>
                     );

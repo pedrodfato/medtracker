@@ -79,7 +79,8 @@ export function Dashboard() {
     // One summary popup at a time; the next one shows after this is dismissed.
     const summaryTarget = medications.find((m) => m.treatmentSummary && !m.treatmentSummary.dismissed) ?? null;
 
-    const activeMedication = sortedMedications[activeMedicationIndex] ?? null;
+    // The list shrinks when a treatment completes, so keep the index inside it.
+    const activeMedication = sortedMedications[Math.min(activeMedicationIndex, sortedMedications.length - 1)] ?? null;
     const activeStats = activeMedication ? stats?.perMedication[activeMedication.id] : undefined;
 
     const handleTakeMedication = async (medId: string) => {

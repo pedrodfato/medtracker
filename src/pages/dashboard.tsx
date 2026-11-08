@@ -10,6 +10,7 @@ import { authClient } from "../lib/auth-client";
 import { getMedicationVisual, type MedicationCategory } from "../lib/medicationVisuals";
 import { formatTimeUntilNextDose } from "../lib/formatTimeUntilNextDose";
 import { Button } from "../components/button";
+import { TreatmentSummaryDialog } from "../components/treatmentSummaryDialog";
 
 type Stats = {
     currentStreak: number;
@@ -32,6 +33,7 @@ export function Dashboard() {
     const [activeMedicationIndex, setActiveMedicationIndex] = useState(0);
     const [undoTarget, setUndoTarget] = useState<Medication | null>(null);
     const [isUndoing, setIsUndoing] = useState(false);
+    const [isDismissingSummary, setIsDismissingSummary] = useState(false);
 
     const fetchMedications = async () => {
         try {
@@ -66,11 +68,16 @@ export function Dashboard() {
         fetchStats();
     }, []);
 
-    const sortedMedications = [...medications].sort((a, b) => {
-        if (!a.nextDoseAt) return 1;
-        if (!b.nextDoseAt) return -1;
-        return new Date(a.nextDoseAt).getTime() - new Date(b.nextDoseAt).getTime();
-    });
+    const sortedMedications = medications
+        .filter((m) => !m.completed)
+        .sort((a, b) => {
+            if (!a.nextDoseAt) return 1;
+            if (!b.nextDoseAt) return -1;
+            return new Date(a.nextDoseAt).getTime() - new Date(b.nextDoseAt).getTime();
+        });
+
+    // One summary popup at a time; the next one shows after this is dismissed.
+    const summaryTarget = medications.find((m) => m.treatmentSummary && !m.treatmentSummary.dismissed) ?? null;
 
     const activeMedication = sortedMedications[activeMedicationIndex] ?? null;
     const activeStats = activeMedication ? stats?.perMedication[activeMedication.id] : undefined;
@@ -112,6 +119,26 @@ export function Dashboard() {
         } finally {
             setIsUndoing(false);
             setUndoTarget(null);
+        }
+    };
+
+    const handleDismissSummary = async (medId: string) => {
+        setIsDismissingSummary(true);
+        try {
+            const response = await fetch(`${API_URL}/medications/${medId}/summary/dismiss`, {
+                method: "POST",
+                credentials: 'include',
+            });
+            if (!response.ok) {
+                const data = await response.json().catch(() => null);
+                console.error('Erro ao dispensar resumo:', data?.error ?? response.status);
+                return;
+            }
+            await fetchMedications();
+        } catch (error) {
+            console.error(error);
+        } finally {
+            setIsDismissingSummary(false);
         }
     };
 
@@ -246,6 +273,14 @@ export function Dashboard() {
                 </div>
             </div>
 
+            {summaryTarget?.treatmentSummary && (
+                <TreatmentSummaryDialog
+                    medicationName={summaryTarget.name}
+                    summary={summaryTarget.treatmentSummary}
+                    isDismissing={isDismissingSummary}
+                    onDismiss={() => handleDismissSummary(summaryTarget.id)}
+                />
+            )}
             {undoTarget && (
                 <div
                     className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-6"

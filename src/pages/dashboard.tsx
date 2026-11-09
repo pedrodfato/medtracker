@@ -1,15 +1,22 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
+import { CalendarCheck, Flame, Plus, TrendingUp, TriangleAlert } from "lucide-react";
 import type { Medication } from "../types/medType";
 import { API_URL } from "../lib/api";
 import { authClient } from "../lib/auth-client";
 import { getMedicationVisual, type MedicationCategory } from "../lib/medicationVisuals";
 import { formatTimeUntilNextDose } from "../lib/formatTimeUntilNextDose";
 import { Button } from "../components/button";
+import { buttonClasses } from "../components/buttonStyles";
+import { GlassCard } from "../components/glassCard";
+import { StatCard } from "../components/statCard";
+import { TodayStrip } from "../components/todayStrip";
+import { TodaySchedule } from "../components/todaySchedule";
+import { HistoryCard } from "../components/historyCard";
 import { TreatmentSummaryDialog } from "../components/treatmentSummaryDialog";
 
 type Stats = {
@@ -25,6 +32,13 @@ type DashboardStats = {
     perMedication: Record<string, Stats>;
 };
 
+function greetingFor(date: Date): string {
+    const hour = date.getHours();
+    if (hour < 12) return "Bom dia";
+    if (hour < 18) return "Boa tarde";
+    return "Boa noite";
+}
+
 export function Dashboard() {
     const navigate = useNavigate();
     const { data: session } = authClient.useSession();
@@ -34,6 +48,7 @@ export function Dashboard() {
     const [undoTarget, setUndoTarget] = useState<Medication | null>(null);
     const [isUndoing, setIsUndoing] = useState(false);
     const [isDismissingSummary, setIsDismissingSummary] = useState(false);
+    const [selectedId, setSelectedId] = useState<string | null>(null);
 
     const fetchMedications = async () => {
         try {
@@ -81,7 +96,17 @@ export function Dashboard() {
 
     // The list shrinks when a treatment completes, so keep the index inside it.
     const activeMedication = sortedMedications[Math.min(activeMedicationIndex, sortedMedications.length - 1)] ?? null;
-    const activeStats = activeMedication ? stats?.perMedication[activeMedication.id] : undefined;
+
+    // History shows the strip's selection, defaulting to the first active medication.
+    const historyId = selectedId ?? (sortedMedications[0]?.id ?? medications[0]?.id ?? null);
+    const historyMedication = medications.find((m) => String(m.id) === String(historyId)) ?? null;
+
+    const scheduledToday = medications.filter((m) => !m.completed && (m.today?.expected ?? 0) > 0);
+    const dosesExpectedToday = scheduledToday.reduce((sum, m) => sum + (m.today?.expected ?? 0), 0);
+    const dosesTakenToday = scheduledToday.reduce(
+        (sum, m) => sum + Math.min(m.today?.taken ?? 0, m.today?.expected ?? 0),
+        0,
+    );
 
     const handleTakeMedication = async (medId: string) => {
         try {
@@ -152,126 +177,135 @@ export function Dashboard() {
     const canTakeMedicationNow = (med: Medication) =>
         !med.lastTakenAt || !med.nextDoseAt || new Date(med.nextDoseAt).getTime() <= Date.now();
 
+    const now = new Date();
+    const firstName = session?.user?.name?.split(" ")[0] ?? "...";
+    const todayLabel = now.toLocaleDateString("pt-BR", { weekday: "long", day: "numeric", month: "long" });
+
     return (
-        <main className="bg-linear-to-b from-[#eef1f4] to-[#f7f8fa] to-35% min-h-screen p-6 gap-5 flex flex-col">
-            <h1 className="text-4xl font-heading text-gray-900 mt-8 mb-2 text-start">
-                Bom dia, {session?.user?.name ?? "..."}
-            </h1>
+        <main className="flex min-h-screen flex-col gap-5 p-5 text-start lg:min-h-0 lg:p-0">
+            <header className="flex items-end justify-between gap-4 pt-6 lg:pt-2">
+                <div>
+                    <p className="text-sm capitalize text-gray-500">{todayLabel}</p>
+                    <h1 className="m-0 font-heading text-3xl font-semibold tracking-tight text-gray-900 lg:text-4xl">
+                        {greetingFor(now)}, {firstName}
+                    </h1>
+                </div>
+                <Link to="/add" className={buttonClasses("primary", "hidden lg:inline-flex")}>
+                    <Plus className="size-[18px]" />
+                    Adicionar remédio
+                </Link>
+            </header>
 
-            <div className="p-4 rounded-[24px] bg-white/70 shadow-[0_4px_20px_rgba(0,0,0,0.06)] flex flex-col items-start gap-3">
-                <h2 className="text-lg font-semibold text-gray-900">Streak de Remédios</h2>
-                <div className="w-full flex justify-between text-sm text-gray-600">
-                    <span>Sequência Atual</span>
-                    <span className="font-medium text-gray-900">{activeStats?.currentStreak ?? 0} dias</span>
-                </div>
-                <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
-                    <div className="h-full bg-primary" style={{ width: `${Math.min(100, (activeStats?.currentStreak ?? 0) * 10)}%` }} />
-                </div>
-
-                <div className="w-full flex justify-between text-sm text-gray-600">
-                    <span>Doses Tomadas</span>
-                    <span className="font-medium text-gray-900">{activeStats?.dosesTaken ?? 0}</span>
-                </div>
-                <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
-                    <div className="h-full bg-primary" style={{ width: `${Math.min(100, (activeStats?.dosesTaken ?? 0))}%` }} />
-                </div>
-
-                <div className="w-full flex justify-between text-sm text-gray-600">
-                    <span>Próxima Dose em</span>
-                    <span className="font-medium text-gray-900">{timeUntilNextDose ?? "-"}</span>
-                </div>
+            <div className="grid grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-4">
+                <StatCard
+                    icon={CalendarCheck}
+                    label="Doses de hoje"
+                    value={`${dosesTakenToday}/${dosesExpectedToday}`}
+                    hint={timeUntilNextDose ? `Próxima em ${timeUntilNextDose}` : undefined}
+                    tone="lime"
+                />
+                <StatCard
+                    icon={TrendingUp}
+                    label="Adesão da semana"
+                    value={`${stats?.overall.weeklyAdherenceRate ?? 0}%`}
+                    tone="mint"
+                />
+                <StatCard
+                    icon={Flame}
+                    label="Sequência"
+                    value={`${stats?.overall.currentStreak ?? 0} ${stats?.overall.currentStreak === 1 ? "dia" : "dias"}`}
+                    tone="amber"
+                />
+                <StatCard
+                    icon={TriangleAlert}
+                    label="Doses perdidas"
+                    value={`${stats?.overall.missedDoses ?? 0}`}
+                    hint="Últimos 7 dias"
+                    tone="rose"
+                />
             </div>
 
-            <div className="p-4 rounded-[24px] bg-white/70 shadow-[0_4px_20px_rgba(0,0,0,0.06)] flex flex-col items-start">
-                <h2 className="text-lg font-semibold text-gray-900 mb-3">Próxima Dose</h2>
-                {sortedMedications.length > 0 ? (
-                    <Swiper
-                        modules={[Pagination]}
-                        pagination={{ clickable: true }}
-                        onSlideChange={(swiper) => setActiveMedicationIndex(swiper.activeIndex)}
-                        className="w-full"
-                        style={{ paddingBottom: '2rem' }}
-                    >
-                        {sortedMedications.map((med) => (
-                            <SwiperSlide key={med.id}>
-                                <button onClick={openReminder} className="flex gap-4 items-center mb-4 w-full text-left">
-                                    <div className={`rounded-2xl p-2 w-20 h-20 flex items-center justify-center shrink-0 text-3xl ${getMedicationVisual(med.category as MedicationCategory).bgClass}`}>
-                                        {getMedicationVisual(med.category as MedicationCategory).emoji}
-                                    </div>
-                                    <div className="flex flex-col flex-1 items-start">
-                                        <h3 className="text-black font-semibold text-2xl">{med.name}</h3>
-                                        <div className="flex gap-4 mt-1">
-                                            <div>
-                                                <p className="text-[#7B7F82] text-xs text-start">Dosagem</p>
-                                                <p className="text-gray-800 font-medium text-start text-2xl">{med.dosage}</p>
-                                            </div>
-                                            <div>
-                                                <p className="text-[#7B7F82] text-xs text-start">Horário</p>
-                                                <p className="text-gray-800 font-medium text-start text-2xl">
-                                                    {med.nextDoseAt
-                                                        ? new Date(med.nextDoseAt).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
-                                                        : "Aguardando"
-                                                    }
-                                                </p>
+            <div className="grid gap-5 lg:grid-cols-12">
+                <GlassCard className="flex flex-col lg:col-span-7">
+                    <h2 className="m-0 mb-3 text-lg font-semibold text-gray-900">Próxima dose</h2>
+                    {sortedMedications.length > 0 ? (
+                        <Swiper
+                            modules={[Pagination]}
+                            pagination={{ clickable: true }}
+                            onSlideChange={(swiper) => setActiveMedicationIndex(swiper.activeIndex)}
+                            className="w-full"
+                            style={{ paddingBottom: '2rem' }}
+                        >
+                            {sortedMedications.map((med) => (
+                                <SwiperSlide key={med.id}>
+                                    <button onClick={openReminder} className="mb-4 flex w-full items-center gap-4 text-left">
+                                        <div className={`flex h-20 w-20 shrink-0 items-center justify-center rounded-2xl text-3xl ${getMedicationVisual(med.category as MedicationCategory).bgClass}`}>
+                                            {getMedicationVisual(med.category as MedicationCategory).emoji}
+                                        </div>
+                                        <div className="flex flex-1 flex-col items-start">
+                                            <h3 className="m-0 text-2xl font-semibold text-gray-900">{med.name}</h3>
+                                            <div className="mt-1 flex gap-6">
+                                                <div>
+                                                    <p className="text-xs text-gray-500">Dosagem</p>
+                                                    <p className="text-xl font-medium text-gray-800">{med.dosage}</p>
+                                                </div>
+                                                <div>
+                                                    <p className="text-xs text-gray-500">Horário</p>
+                                                    <p className="text-xl font-medium text-gray-800">
+                                                        {med.nextDoseAt
+                                                            ? new Date(med.nextDoseAt).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
+                                                            : "Aguardando"
+                                                        }
+                                                    </p>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                </button>
-                                {med.lastTakenAt && (
-                                    <p className="text-xs text-gray-400 mb-3 -mt-2">
-                                        Última dose: {new Date(med.lastTakenAt).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}
-                                    </p>
-                                )}
-                                <Button
-                                    variant={canTakeMedicationNow(med) ? "primary" : "secondary"}
-                                    onClick={() => handleTakeMedication(med.id)}
-                                    disabled={!canTakeMedicationNow(med)}
-                                    className="w-full"
-                                >
-                                    {canTakeMedicationNow(med) ? "Confirmar dose" : "Próxima dose ainda não disponível"}
-                                </Button>
-                                {med.lastTakenAt && (
-                                    <button
-                                        onClick={() => setUndoTarget(med)}
-                                        className="w-full mt-2 text-sm text-gray-500 underline"
-                                    >
-                                        Marquei por engano? Desfazer última dose
                                     </button>
-                                )}
-                            </SwiperSlide>
-                        ))}
-                    </Swiper>
-                ) : (
-                    <div className="bg-white p-6 rounded-[24px] text-center border border-dashed border-gray-300 w-full">
-                        <p className="text-gray-500 mb-4">Você não tem remédios pendentes.</p>
-                    </div>
-                )}
-            </div>
-
-            <div>
-                <h2 className="text-lg font-semibold text-gray-900 mb-3">Insights de Adesão</h2>
-                <div className="grid grid-cols-2 gap-3">
-                    <div className="p-4 rounded-[20px] bg-white/70 shadow-[0_4px_20px_rgba(0,0,0,0.06)]">
-                        <p className="text-xs text-gray-500">Adesão da semana</p>
-                        <p className="text-2xl font-semibold text-gray-900">{stats?.overall.weeklyAdherenceRate ?? 0}%</p>
-                    </div>
-                    <div className="p-4 rounded-[20px] bg-white/70 shadow-[0_4px_20px_rgba(0,0,0,0.06)]">
-                        <p className="text-xs text-gray-500">Doses perdidas</p>
-                        <p className="text-2xl font-semibold text-gray-900">{stats?.overall.missedDoses ?? 0}</p>
-                        {stats?.overall.missedByMedication && stats.overall.missedByMedication.length > 0 && (
-                            <div className="mt-2 flex flex-col gap-0.5">
-                                {stats.overall.missedByMedication.map((entry) => {
-                                    const med = medications.find((m) => Number(m.id) === entry.medicationId);
-                                    return (
-                                        <p key={entry.medicationId} className="text-xs text-gray-500 truncate">
-                                            {med?.name ?? "Remédio"}: {entry.missedCount}
+                                    {med.lastTakenAt && (
+                                        <p className="-mt-2 mb-3 text-xs text-gray-500">
+                                            Última dose: {new Date(med.lastTakenAt).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}
                                         </p>
-                                    );
-                                })}
-                            </div>
-                        )}
-                    </div>
-                </div>
+                                    )}
+                                    <Button
+                                        variant={canTakeMedicationNow(med) ? "primary" : "secondary"}
+                                        onClick={() => handleTakeMedication(med.id)}
+                                        disabled={!canTakeMedicationNow(med)}
+                                        className="w-full"
+                                    >
+                                        {canTakeMedicationNow(med) ? "Confirmar dose" : "Próxima dose ainda não disponível"}
+                                    </Button>
+                                    {med.lastTakenAt && (
+                                        <button
+                                            onClick={() => setUndoTarget(med)}
+                                            className="mt-2 w-full text-center text-sm text-gray-500 underline"
+                                        >
+                                            Marquei por engano? Desfazer última dose
+                                        </button>
+                                    )}
+                                </SwiperSlide>
+                            ))}
+                        </Swiper>
+                    ) : (
+                        <div className="rounded-2xl border border-dashed border-gray-900/15 p-6 text-center">
+                            <p className="mb-4 text-gray-500">Você não tem remédios pendentes.</p>
+                            <Link to="/add" className={buttonClasses("secondary")}>Adicionar remédio</Link>
+                        </div>
+                    )}
+                </GlassCard>
+
+                <TodaySchedule className="lg:col-span-5" medications={medications} />
+
+                {medications.length > 0 && (
+                    <>
+                        <TodayStrip
+                            className="lg:col-span-5"
+                            medications={medications}
+                            selectedId={historyId}
+                            onSelect={setSelectedId}
+                        />
+                        <HistoryCard className="lg:col-span-7" medication={historyMedication} selectedId={historyId} />
+                    </>
+                )}
             </div>
 
             {summaryTarget?.treatmentSummary && (
@@ -282,38 +316,30 @@ export function Dashboard() {
                     onDismiss={() => handleDismissSummary(summaryTarget.id)}
                 />
             )}
+
             {undoTarget && (
                 <div
-                    className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-6"
+                    className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/30 p-6 backdrop-blur-sm"
                     onClick={() => !isUndoing && setUndoTarget(null)}
                 >
                     <div
                         role="dialog"
                         aria-modal="true"
                         aria-labelledby="undo-dose-title"
-                        className="w-full max-w-sm rounded-[24px] bg-white p-6 shadow-xl flex flex-col gap-4"
+                        className="glass-strong flex w-full max-w-sm flex-col gap-4 rounded-[24px] p-6"
                         onClick={(e) => e.stopPropagation()}
                     >
-                        <h2 id="undo-dose-title" className="text-lg font-semibold text-gray-900">
+                        <h2 id="undo-dose-title" className="m-0 text-lg font-semibold text-gray-900">
                             Desfazer última dose?
                         </h2>
                         <p className="text-gray-600">
                             O registro da última dose de <strong>{undoTarget.name}</strong> será removido.
                         </p>
                         <div className="flex gap-3">
-                            <Button
-                                variant="outline"
-                                className="flex-1"
-                                onClick={() => setUndoTarget(null)}
-                                disabled={isUndoing}
-                            >
+                            <Button variant="outline" className="flex-1" onClick={() => setUndoTarget(null)} disabled={isUndoing}>
                                 Não
                             </Button>
-                            <Button
-                                className="flex-1"
-                                onClick={() => handleUndoMedication(undoTarget.id)}
-                                disabled={isUndoing}
-                            >
+                            <Button className="flex-1" onClick={() => handleUndoMedication(undoTarget.id)} disabled={isUndoing}>
                                 Sim
                             </Button>
                         </div>

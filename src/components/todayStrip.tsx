@@ -1,3 +1,4 @@
+import { cn } from "@/lib/utils";
 import type { Medication } from "../types/medType";
 import { getMedicationVisual, type MedicationCategory } from "../lib/medicationVisuals";
 
@@ -5,6 +6,7 @@ type Props = {
     medications: Medication[];
     selectedId: string | null;
     onSelect: (id: string) => void;
+    className?: string;
 };
 
 type TodayStatus = "done" | "partial" | "pending" | "off";
@@ -18,7 +20,7 @@ function todayStatus(med: Medication): TodayStatus {
     return "pending";
 }
 
-export function TodayStrip({ medications, selectedId, onSelect }: Props) {
+export function TodayStrip({ medications, selectedId, onSelect, className }: Props) {
     const active = medications.filter((m) => !m.completed);
     const completed = medications.filter((m) => m.completed);
     const scheduledToday = active.filter((m) => todayStatus(m) !== "off");
@@ -67,8 +69,8 @@ export function TodayStrip({ medications, selectedId, onSelect }: Props) {
     };
 
     return (
-        <section className="p-4 rounded-[24px] bg-white/70 shadow-[0_4px_20px_rgba(0,0,0,0.06)] flex flex-col gap-3 text-start">
-            <h2 className="text-lg font-semibold text-gray-900">
+        <section className={cn("glass rounded-[24px] p-5 flex flex-col gap-3 text-start", className)}>
+            <h2 className="m-0 text-lg font-semibold text-gray-900">
                 Hoje{" "}
                 <span className="text-sm font-normal text-gray-500">
                     · {doneToday.length} de {scheduledToday.length} tomados

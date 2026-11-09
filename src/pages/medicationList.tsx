@@ -86,7 +86,7 @@ export function MedicationList() {
         <div className="flex min-h-screen w-full flex-col gap-4 px-5 pt-10 text-start lg:min-h-0 lg:px-0 lg:pt-2">
             <h1 className="m-0 font-heading text-3xl font-semibold tracking-tight text-gray-900">Remédios</h1>
             <div className="flex relative w-full">
-                <Search className="absolute top-1/2 -translate-y-1/2 left-4 size-[18px] text-gray-400" size={18} />
+                <Search className="pointer-events-none absolute top-1/2 left-4 z-10 size-[18px] -translate-y-1/2 text-gray-400" size={18} />
                 <Input
                     className="pl-11"
                     placeholder="Procurar remédios..."

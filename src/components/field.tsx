@@ -16,7 +16,7 @@ export function Field({ label, htmlFor, icon: Icon, hint, error, children }: Fie
             <label htmlFor={htmlFor} className="text-[13px] font-medium text-gray-700">{label}</label>
             <div className="relative">
                 {Icon && (
-                    <Icon aria-hidden="true" className="pointer-events-none absolute left-4 top-1/2 size-[18px] -translate-y-1/2 text-gray-400" />
+                    <Icon aria-hidden="true" className="pointer-events-none absolute left-4 top-1/2 z-10 size-[18px] -translate-y-1/2 text-gray-400" />
                 )}
                 {children}
             </div>

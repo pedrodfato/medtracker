@@ -225,8 +225,8 @@ export function Dashboard() {
                 />
             </div>
 
-            <div className="grid gap-5 lg:grid-cols-12">
-                <GlassCard className="flex flex-col lg:col-span-7">
+            <div className="grid grid-cols-1 gap-5 lg:grid-cols-12">
+                <GlassCard className="flex min-w-0 flex-col lg:col-span-7">
                     <h2 className="m-0 mb-3 text-lg font-semibold text-gray-900">Próxima dose</h2>
                     {sortedMedications.length > 0 ? (
                         <Swiper

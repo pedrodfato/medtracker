@@ -107,7 +107,7 @@ export function Progress() {
 
             {medications.length > 0 && (
                 <>
-                    <div className="grid gap-5 lg:grid-cols-12">
+                    <div className="grid grid-cols-1 gap-5 lg:grid-cols-12">
                         <TodayStrip
                             className="lg:col-span-5"
                             medications={medications}

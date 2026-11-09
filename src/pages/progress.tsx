@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
 import { API_URL } from "../lib/api";
 import { getMedicationVisual, type MedicationCategory } from "../lib/medicationVisuals";
+import type { Medication, MedicationHistory } from "../types/medType";
+import { TodayStrip } from "../components/todayStrip";
+import { AdherenceHeatmap } from "../components/adherenceHeatmap";
 
 type DoseLogEntry = {
     id: number;
@@ -26,6 +29,65 @@ function dayLabel(date: Date, today: Date): string {
 export function Progress() {
     const [doses, setDoses] = useState<DoseLogEntry[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [medications, setMedications] = useState<Medication[]>([]);
+    const [medicationsLoaded, setMedicationsLoaded] = useState(false);
+    const [selectedId, setSelectedId] = useState<string | null>(null);
+    const [history, setHistory] = useState<MedicationHistory | null>(null);
+    const [historyError, setHistoryError] = useState(false);
+
+    useEffect(() => {
+        const loadMedications = async () => {
+            try {
+                const response = await fetch(`${API_URL}/medications`, {
+                    method: 'GET',
+                    credentials: 'include',
+                });
+                if (!response.ok) throw new Error('Failed to fetch medications');
+                const responseData = await response.json();
+                const meds: Medication[] = responseData.data;
+                setMedications(meds);
+                // Same order as the strip: active first, then completed.
+                const first = meds.find((m) => !m.completed) ?? meds[0];
+                if (first) setSelectedId(first.id);
+            } catch (error) {
+                console.error('Error fetching medications:', error);
+            } finally {
+                setMedicationsLoaded(true);
+            }
+        };
+        loadMedications();
+    }, []);
+
+    useEffect(() => {
+        if (!selectedId) return;
+        let cancelled = false;
+        const loadHistory = async () => {
+            try {
+                const response = await fetch(`${API_URL}/medications/${selectedId}/history`, {
+                    method: 'GET',
+                    credentials: 'include',
+                });
+                if (!response.ok) throw new Error('Failed to fetch history');
+                const responseData = await response.json();
+                if (!cancelled) setHistory(responseData.data);
+            } catch (error) {
+                console.error('Error fetching medication history:', error);
+                if (!cancelled) setHistoryError(true);
+            }
+        };
+        loadHistory();
+        return () => {
+            cancelled = true;
+        };
+    }, [selectedId]);
+
+    const handleSelect = (id: string) => {
+        setHistoryError(false);
+        setSelectedId(id);
+    };
+
+    const selectedMedication = medications.find((m) => String(m.id) === String(selectedId)) ?? null;
+    const historyIsCurrent = history !== null && String(history.medicationId) === String(selectedId);
 
     useEffect(() => {
         const loadDoses = async () => {
@@ -61,6 +123,36 @@ export function Progress() {
     return (
         <main className="bg-linear-to-b from-[#eef1f4] to-[#f7f8fa] to-35% min-h-screen p-6 flex flex-col gap-6">
             <h1 className="text-4xl font-heading text-gray-900 mt-8 mb-2 text-start">Progresso</h1>
+
+            {medicationsLoaded && medications.length === 0 && (
+                <div className="bg-white p-6 rounded-[24px] text-center border border-dashed border-gray-300">
+                    <p className="text-gray-500">Cadastre um remédio para acompanhar o progresso dele aqui.</p>
+                </div>
+            )}
+
+            {medications.length > 0 && (
+                <>
+                    <TodayStrip medications={medications} selectedId={selectedId} onSelect={handleSelect} />
+
+                    <section className="p-4 rounded-[24px] bg-white/70 shadow-[0_4px_20px_rgba(0,0,0,0.06)] flex flex-col gap-3">
+                        <h2 className="text-lg font-semibold text-gray-900">
+                            Histórico{selectedMedication ? ` · ${selectedMedication.name}` : ""}
+                        </h2>
+                        {historyError ? (
+                            <p className="text-sm text-gray-500">Não foi possível carregar o histórico.</p>
+                        ) : historyIsCurrent ? (
+                            <AdherenceHeatmap
+                                key={history.medicationId}
+                                days={history.days}
+                                expected={history.expected}
+                                taken={history.taken}
+                            />
+                        ) : (
+                            <p className="text-sm text-gray-500">Carregando...</p>
+                        )}
+                    </section>
+                </>
+            )}
 
             {isLoading ? (
                 <p className="text-gray-500 text-center">Carregando...</p>

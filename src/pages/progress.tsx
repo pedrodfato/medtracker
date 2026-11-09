@@ -82,6 +82,8 @@ export function Progress() {
     }, [selectedId]);
 
     const handleSelect = (id: string) => {
+        // Same medication: nothing would refetch, so keep the current state.
+        if (String(id) === String(selectedId)) return;
         setHistoryError(false);
         setSelectedId(id);
     };

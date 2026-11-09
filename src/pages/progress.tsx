@@ -31,6 +31,7 @@ export function Progress() {
     const [isLoading, setIsLoading] = useState(true);
     const [medications, setMedications] = useState<Medication[]>([]);
     const [medicationsLoaded, setMedicationsLoaded] = useState(false);
+    const [medicationsError, setMedicationsError] = useState(false);
     const [selectedId, setSelectedId] = useState<string | null>(null);
     const [history, setHistory] = useState<MedicationHistory | null>(null);
     const [historyError, setHistoryError] = useState(false);
@@ -51,6 +52,7 @@ export function Progress() {
                 if (first) setSelectedId(first.id);
             } catch (error) {
                 console.error('Error fetching medications:', error);
+                setMedicationsError(true);
             } finally {
                 setMedicationsLoaded(true);
             }
@@ -128,7 +130,11 @@ export function Progress() {
 
             {medicationsLoaded && medications.length === 0 && (
                 <div className="bg-white p-6 rounded-[24px] text-center border border-dashed border-gray-300">
-                    <p className="text-gray-500">Cadastre um remédio para acompanhar o progresso dele aqui.</p>
+                    <p className="text-gray-500">
+                        {medicationsError
+                            ? "Não foi possível carregar os remédios."
+                            : "Cadastre um remédio para acompanhar o progresso dele aqui."}
+                    </p>
                 </div>
             )}
 

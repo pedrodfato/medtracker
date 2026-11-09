@@ -83,9 +83,10 @@ export function MedicationList() {
     });
 
     return (
-        <div className="flex flex-col bg-linear-to-b from-[#eef1f4] to-[#f7f8fa] to-35% min-h-screen items-center justify-start w-full px-4 gap-4 pt-15">
+        <div className="flex min-h-screen w-full flex-col gap-4 px-5 pt-10 text-start lg:min-h-0 lg:px-0 lg:pt-2">
+            <h1 className="m-0 font-heading text-3xl font-semibold tracking-tight text-gray-900">Remédios</h1>
             <div className="flex relative w-full">
-                <Search className="absolute top-1/2 -translate-y-1/2 left-4 opacity-50" size={18} />
+                <Search className="absolute top-1/2 -translate-y-1/2 left-4 size-[18px] text-gray-400" size={18} />
                 <Input
                     className="pl-11"
                     placeholder="Procurar remédios..."
@@ -97,8 +98,8 @@ export function MedicationList() {
             <div className="flex gap-2 w-full overflow-x-auto">
                 <button
                     onClick={() => setActiveCategory(null)}
-                    className={`px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
-                        activeCategory === null ? "bg-primary text-primary-foreground" : "bg-white text-gray-500"
+                    className={`h-9 px-4 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
+                        activeCategory === null ? "bg-primary text-primary-foreground" : "glass text-gray-600"
                     }`}
                 >
                     Todos
@@ -107,8 +108,8 @@ export function MedicationList() {
                     <button
                         key={value}
                         onClick={() => setActiveCategory(value)}
-                        className={`px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
-                            activeCategory === value ? "bg-primary text-primary-foreground" : "bg-white text-gray-500"
+                        className={`h-9 px-4 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
+                            activeCategory === value ? "bg-primary text-primary-foreground" : "glass text-gray-600"
                         }`}
                     >
                         {label}
@@ -120,7 +121,7 @@ export function MedicationList() {
                 {filteredMedications.map((med) => {
                     const visual = getMedicationVisual(med.category as MedicationCategory);
                     return (
-                        <div key={med.id} className="flex p-4 rounded-3xl shadow gap-3 relative bg-white/70 shadow-[0_4px_20px_rgba(0,0,0,0.06)] backdrop-blur-md">
+                        <div key={med.id} className="glass relative flex gap-3 rounded-[24px] p-4">
                             <div className={`w-18 h-18 rounded-2xl ${visual.bgClass} flex items-center justify-center shrink-0 text-3xl`}>
                                 {visual.emoji}
                             </div>
@@ -136,7 +137,7 @@ export function MedicationList() {
                             </div>
                             <div className="flex flex-1 flex-col items-end justify-between"><button onClick={() => toggleMenu(med.id)}><EllipsisVertical className="" /></button>
                             {openMenuId === med.id && (
-                                    <div className="absolute right-0 top-8 mt-1 w-36 bg-white rounded-xl shadow-lg border border-gray-100 py-2 z-10 animate-in fade-in slide-in-from-top-2 duration-200">
+                                    <div className="absolute right-0 top-8 mt-1 w-36 glass-strong rounded-2xl py-2 z-10 animate-in fade-in slide-in-from-top-2 duration-200">
 
                                         <button
                                             onClick={() => handleEdit(med)}
@@ -171,7 +172,7 @@ export function MedicationList() {
                     );
                 })}
             </div>
-            <Link to="/add">
+            <Link to="/add" className="lg:hidden">
                 <Plus className="fixed bottom-28 right-6
 w-14 h-14
 rounded-full
@@ -184,8 +185,8 @@ transition-all
 active:scale-95 z-50" /></Link>
 
             {medicationToDelete && (
-                <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 px-6">
-                    <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl">
+                <div className="fixed inset-0 bg-gray-900/30 backdrop-blur-sm flex items-center justify-center z-50 px-6">
+                    <div className="glass-strong rounded-[24px] p-6 w-full max-w-sm">
                         <h2 className="text-lg font-semibold text-gray-900 mb-2">Excluir remédio?</h2>
                         <p className="text-gray-600 text-sm mb-6">
                             Tem certeza que deseja excluir <strong>{medicationToDelete.name}</strong>? Essa ação não pode ser desfeita.

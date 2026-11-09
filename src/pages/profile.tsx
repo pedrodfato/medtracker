@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { authClient } from "../lib/auth-client";
 import { Input } from "@/components/ui/input";
 import { Button } from "../components/button";
+import { inputClasses } from "@/components/ui/input";
 
 const TIMEZONE_OPTIONS = [
     { value: "America/Sao_Paulo", label: "Horário de Brasília (SP)" },
@@ -93,10 +94,11 @@ export function Profile() {
         .toUpperCase();
 
     return (
-        <main className="bg-linear-to-b from-[#eef1f4] to-[#f7f8fa] to-35% min-h-screen p-6 flex flex-col gap-6">
-            <h1 className="text-4xl font-heading text-gray-900 mt-8 mb-2 text-start">Perfil</h1>
+        <main className="flex min-h-screen flex-col gap-5 p-5 text-start lg:min-h-0 lg:p-0">
+            <h1 className="m-0 pt-6 font-heading text-3xl font-semibold tracking-tight text-gray-900 lg:pt-2 lg:text-4xl">Perfil</h1>
 
-            <div className="p-4 rounded-[24px] bg-white/70 shadow-[0_4px_20px_rgba(0,0,0,0.06)] flex items-center gap-4">
+            <div className="grid gap-5 lg:grid-cols-2 lg:items-start">
+            <div className="p-4 glass rounded-[24px] flex items-center gap-4">
                 <div className="w-16 h-16 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xl font-semibold shrink-0">
                     {initials}
                 </div>
@@ -134,7 +136,7 @@ export function Profile() {
             <div className="flex flex-col gap-3">
                 <button
                     onClick={startEditingName}
-                    className="p-4 rounded-[20px] bg-white/70 shadow-[0_4px_20px_rgba(0,0,0,0.06)] flex items-center gap-3 text-left"
+                    className="p-4 glass rounded-[24px] flex items-center gap-3 text-left"
                 >
                     <div className="w-10 h-10 rounded-full bg-tertiary flex items-center justify-center text-lg shrink-0">
                         👤
@@ -142,7 +144,7 @@ export function Profile() {
                     <span className="font-medium text-gray-900">Meus Dados</span>
                 </button>
 
-                <div className="p-4 rounded-[20px] bg-white/70 shadow-[0_4px_20px_rgba(0,0,0,0.06)] flex flex-col gap-2">
+                <div className="p-4 glass rounded-[24px] flex flex-col gap-2">
                     <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-full bg-tertiary flex items-center justify-center text-lg shrink-0">
                             🔔
@@ -169,7 +171,7 @@ export function Profile() {
                         value={reminderLeadMinutes}
                         onChange={(e) => updateReminders({ reminderLeadMinutes: Number(e.target.value) })}
                         disabled={isSaving || !reminderEnabled}
-                        className="w-full rounded-full border border-input px-4 py-2 text-sm bg-transparent disabled:opacity-50"
+                        className={inputClasses}
                     >
                         {REMINDER_LEAD_OPTIONS.map((option) => (
                             <option key={option.value} value={option.value}>{option.label}</option>
@@ -177,7 +179,7 @@ export function Profile() {
                     </select>
                 </div>
 
-                <div className="p-4 rounded-[20px] bg-white/70 shadow-[0_4px_20px_rgba(0,0,0,0.06)] flex flex-col gap-2">
+                <div className="p-4 glass rounded-[24px] flex flex-col gap-2">
                     <button
                         onClick={() => setIsEditingTimezone((prev) => !prev)}
                         className="flex items-center gap-3 text-left w-full"
@@ -195,7 +197,7 @@ export function Profile() {
                             value={userTimezone}
                             onChange={(e) => changeTimezone(e.target.value)}
                             disabled={isSaving}
-                            className="mt-2 w-full rounded-full border border-input px-4 py-2 text-sm bg-transparent"
+                            className={`${inputClasses} mt-2`}
                         >
                             {TIMEZONE_OPTIONS.map((tz) => (
                                 <option key={tz.value} value={tz.value}>{tz.label}</option>
@@ -203,6 +205,8 @@ export function Profile() {
                         </select>
                     )}
                 </div>
+            </div>
+
             </div>
 
             <button onClick={handleLogout} className="text-red-500 font-medium text-center mt-2">

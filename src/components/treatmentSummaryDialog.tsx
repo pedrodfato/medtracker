@@ -13,18 +13,18 @@ const formatDay = (date: string) =>
 
 export function TreatmentSummaryDialog({ medicationName, summary, isDismissing, onDismiss }: Props) {
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-6">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/30 backdrop-blur-sm p-6">
             <div
                 role="dialog"
                 aria-modal="true"
                 aria-labelledby="treatment-summary-title"
-                className="w-full max-w-sm max-h-[85vh] overflow-y-auto rounded-[24px] bg-white p-6 shadow-xl flex flex-col gap-4"
+                className="w-full max-w-sm max-h-[85vh] overflow-y-auto glass-strong rounded-[24px] p-6 flex flex-col gap-4"
             >
-                <h2 id="treatment-summary-title" className="text-lg font-semibold text-gray-900">
+                <h2 id="treatment-summary-title" className="m-0 text-lg font-semibold text-gray-900">
                     Tratamento concluído: {medicationName}
                 </h2>
 
-                <div className="rounded-2xl bg-gray-50 p-4 text-center">
+                <div className="rounded-2xl bg-white/60 p-4 text-center">
                     <p className="text-4xl font-semibold text-gray-900">
                         {summary.taken}/{summary.expected}
                     </p>

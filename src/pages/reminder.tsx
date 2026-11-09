@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Button } from "../components/button";
+import { GlassCard } from "../components/glassCard";
 import { API_URL } from "../lib/api";
 import { getMedicationVisual, type MedicationCategory } from "../lib/medicationVisuals";
 import type { Medication } from "../types/medType";
@@ -43,7 +44,8 @@ export function Reminder() {
     const timeLabel = now.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
 
     return (
-        <main className="flex flex-col min-h-screen items-center justify-around bg-white px-8 text-center">
+        <main className="flex flex-col min-h-screen items-center justify-center px-8 py-10 text-center">
+            <GlassCard className="glass-strong flex w-full max-w-md flex-col items-center gap-8 p-8">
             <p className="text-5xl font-bold text-neutral">{timeLabel}</p>
 
             <div className="relative flex items-center justify-center">
@@ -67,6 +69,7 @@ export function Reminder() {
                     {snoozed ? "Vou lembrar em 5 min" : "Lembrar em 5 min"}
                 </Button>
             </div>
+            </GlassCard>
         </main>
     );
 }

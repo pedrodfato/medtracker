@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { API_URL } from "../lib/api";
 import { getMedicationVisual, type MedicationCategory } from "../lib/medicationVisuals";
-import type { Medication, MedicationHistory } from "../types/medType";
+import type { Medication } from "../types/medType";
 import { TodayStrip } from "../components/todayStrip";
-import { AdherenceHeatmap } from "../components/adherenceHeatmap";
+import { HistoryCard } from "../components/historyCard";
 
 type DoseLogEntry = {
     id: number;
@@ -33,8 +33,6 @@ export function Progress() {
     const [medicationsLoaded, setMedicationsLoaded] = useState(false);
     const [medicationsError, setMedicationsError] = useState(false);
     const [selectedId, setSelectedId] = useState<string | null>(null);
-    const [history, setHistory] = useState<MedicationHistory | null>(null);
-    const [historyError, setHistoryError] = useState(false);
 
     useEffect(() => {
         const loadMedications = async () => {
@@ -60,38 +58,7 @@ export function Progress() {
         loadMedications();
     }, []);
 
-    useEffect(() => {
-        if (!selectedId) return;
-        let cancelled = false;
-        const loadHistory = async () => {
-            try {
-                const response = await fetch(`${API_URL}/medications/${selectedId}/history`, {
-                    method: 'GET',
-                    credentials: 'include',
-                });
-                if (!response.ok) throw new Error('Failed to fetch history');
-                const responseData = await response.json();
-                if (!cancelled) setHistory(responseData.data);
-            } catch (error) {
-                console.error('Error fetching medication history:', error);
-                if (!cancelled) setHistoryError(true);
-            }
-        };
-        loadHistory();
-        return () => {
-            cancelled = true;
-        };
-    }, [selectedId]);
-
-    const handleSelect = (id: string) => {
-        // Same medication: nothing would refetch, so keep the current state.
-        if (String(id) === String(selectedId)) return;
-        setHistoryError(false);
-        setSelectedId(id);
-    };
-
     const selectedMedication = medications.find((m) => String(m.id) === String(selectedId)) ?? null;
-    const historyIsCurrent = history !== null && String(history.medicationId) === String(selectedId);
 
     useEffect(() => {
         const loadDoses = async () => {
@@ -125,11 +92,11 @@ export function Progress() {
     });
 
     return (
-        <main className="bg-linear-to-b from-[#eef1f4] to-[#f7f8fa] to-35% min-h-screen p-6 flex flex-col gap-6">
-            <h1 className="text-4xl font-heading text-gray-900 mt-8 mb-2 text-start">Progresso</h1>
+        <main className="flex min-h-screen flex-col gap-5 p-5 text-start lg:min-h-0 lg:p-0">
+            <h1 className="m-0 pt-6 font-heading text-3xl font-semibold tracking-tight text-gray-900 lg:pt-2 lg:text-4xl">Progresso</h1>
 
             {medicationsLoaded && medications.length === 0 && (
-                <div className="bg-white p-6 rounded-[24px] text-center border border-dashed border-gray-300">
+                <div className="glass rounded-[24px] p-6 text-center">
                     <p className="text-gray-500">
                         {medicationsError
                             ? "Não foi possível carregar os remédios."
@@ -140,32 +107,26 @@ export function Progress() {
 
             {medications.length > 0 && (
                 <>
-                    <TodayStrip medications={medications} selectedId={selectedId} onSelect={handleSelect} />
-
-                    <section className="p-4 rounded-[24px] bg-white/70 shadow-[0_4px_20px_rgba(0,0,0,0.06)] flex flex-col gap-3 text-start">
-                        <h2 className="text-lg font-semibold text-gray-900">
-                            Histórico{selectedMedication ? ` · ${selectedMedication.name}` : ""}
-                        </h2>
-                        {historyError ? (
-                            <p className="text-sm text-gray-500">Não foi possível carregar o histórico.</p>
-                        ) : historyIsCurrent ? (
-                            <AdherenceHeatmap
-                                key={history.medicationId}
-                                days={history.days}
-                                expected={history.expected}
-                                taken={history.taken}
-                            />
-                        ) : (
-                            <p className="text-sm text-gray-500">Carregando...</p>
-                        )}
-                    </section>
+                    <div className="grid gap-5 lg:grid-cols-12">
+                        <TodayStrip
+                            className="lg:col-span-5"
+                            medications={medications}
+                            selectedId={selectedId}
+                            onSelect={setSelectedId}
+                        />
+                        <HistoryCard
+                            className="lg:col-span-7"
+                            medication={selectedMedication}
+                            selectedId={selectedId}
+                        />
+                    </div>
                 </>
             )}
 
             {isLoading ? (
                 <p className="text-gray-500 text-center">Carregando...</p>
             ) : groups.length === 0 ? (
-                <div className="bg-white p-6 rounded-[24px] text-center border border-dashed border-gray-300">
+                <div className="glass rounded-[24px] p-6 text-center">
                     <p className="text-gray-500">Nenhuma dose registrada ainda. Toda vez que você confirmar um remédio, ele aparece aqui.</p>
                 </div>
             ) : (
@@ -189,7 +150,7 @@ export function Progress() {
                                             )}
                                             <span className={`relative w-3.5 h-3.5 rounded-full border-2 border-white ${isFirstToday ? 'bg-primary' : 'bg-gray-300'}`} />
                                         </div>
-                                        <div className="flex-1 flex items-center gap-3 bg-white/70 rounded-2xl p-3 shadow-[0_4px_20px_rgba(0,0,0,0.05)]">
+                                        <div className="flex-1 flex items-center gap-3 glass rounded-2xl p-3">
                                             <div className={`w-10 h-10 rounded-xl ${visual.bgClass} flex items-center justify-center text-xl shrink-0`}>
                                                 {visual.emoji}
                                             </div>

@@ -13,6 +13,7 @@ import { Reminder } from './pages/reminder';
 import { Progress } from './pages/progress';
 import { Profile } from './pages/profile';
 import { ScrollToTop } from './components/ScrollToTop';
+import { AppBackground } from './components/appBackground';
 
 
 
@@ -21,6 +22,7 @@ function App() {
   return (
 
     <BrowserRouter>
+      <AppBackground />
       <ScrollToTop />
       <Routes>
         <Route path="/" element={<OpenRoute><OnBoarding /></OpenRoute>} />

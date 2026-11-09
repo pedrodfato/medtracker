@@ -6,6 +6,21 @@ export interface TreatmentSummary {
     dismissed: boolean;
 }
 
+export interface DayAdherence {
+    date: string;
+    expected: number;
+    taken: number;
+}
+
+export interface MedicationHistory {
+    medicationId: number;
+    startDate: string;
+    endDate: string | null;
+    days: DayAdherence[];
+    expected: number;
+    taken: number;
+}
+
 export interface Medication {
 id: string;
     name: string;
@@ -20,4 +35,5 @@ id: string;
     durationDays?: number | null;
     completed?: boolean;
     treatmentSummary?: TreatmentSummary | null;
+    today?: { expected: number; taken: number };
 }

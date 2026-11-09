@@ -5,7 +5,7 @@ export function Menu() {
     const location = useLocation();
 
     return (
-        <div className="fixed bottom-0 w-full bg-white flex justify-around items-center pt-4 pb-6 px-4 rounded-t-[32px] shadow-[0_-8px_30px_rgba(0,0,0,0.06)] z-50">
+        <div className="glass-strong fixed inset-x-3 bottom-3 z-50 flex items-center justify-around rounded-[28px] px-4 py-3">
             
             <Link to="/dashboard" className="flex flex-col items-center gap-1">
                 <House 

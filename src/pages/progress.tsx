@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { API_URL } from "../lib/api";
-import { getMedicationVisual, type MedicationCategory } from "../lib/medicationVisuals";
+import { MedicationIcon } from "../components/medicationIcon";
+import { appearanceOf } from "../lib/medicationAppearance";
 import type { Medication } from "../types/medType";
 import { TodayStrip } from "../components/todayStrip";
 import { HistoryCard } from "../components/historyCard";
@@ -10,7 +11,9 @@ type DoseLogEntry = {
     medicationId: number;
     medicationName: string;
     dosage: string;
-    category: MedicationCategory;
+    category: "pill" | "drop" | "vitamin";
+    form?: string | null;
+    color?: string | null;
     takenAt: string;
 };
 
@@ -136,7 +139,6 @@ export function Progress() {
                         <div className="relative flex flex-col gap-4 pl-6">
                             <div className="absolute left-[7px] top-2 bottom-2 w-px bg-gray-200" aria-hidden="true" />
                             {group.entries.map((dose, entryIndex) => {
-                                const visual = getMedicationVisual(dose.category);
                                 const isFirstToday = groupIndex === 0 && entryIndex === 0 && group.label === "Hoje";
                                 return (
                                     <div
@@ -151,8 +153,8 @@ export function Progress() {
                                             <span className={`relative w-3.5 h-3.5 rounded-full border-2 border-white ${isFirstToday ? 'bg-primary' : 'bg-gray-300'}`} />
                                         </div>
                                         <div className="flex-1 flex items-center gap-3 glass rounded-2xl p-3">
-                                            <div className={`w-10 h-10 rounded-xl ${visual.bgClass} flex items-center justify-center text-xl shrink-0`}>
-                                                {visual.emoji}
+                                            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/80">
+                                                <MedicationIcon {...appearanceOf(dose)} size={34} />
                                             </div>
                                             <div className="flex-1">
                                                 <p className="font-medium text-gray-900 text-sm">{dose.medicationName}</p>

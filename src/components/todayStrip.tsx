@@ -1,6 +1,7 @@
 import { cn } from "@/lib/utils";
 import type { Medication } from "../types/medType";
-import { getMedicationVisual, type MedicationCategory } from "../lib/medicationVisuals";
+import { MedicationIcon } from "./medicationIcon";
+import { appearanceOf } from "../lib/medicationAppearance";
 
 type Props = {
     medications: Medication[];
@@ -27,13 +28,12 @@ export function TodayStrip({ medications, selectedId, onSelect, className }: Pro
     const doneToday = scheduledToday.filter((m) => todayStatus(m) === "done");
 
     const renderItem = (med: Medication, isCompleted: boolean) => {
-        const visual = getMedicationVisual(med.category as MedicationCategory);
         const status = todayStatus(med);
         const isSelected = String(med.id) === String(selectedId);
         const tone = isCompleted
-            ? `${visual.bgClass} opacity-60`
+            ? "bg-white/80 opacity-60"
             : status === "done" || status === "partial"
-                ? visual.bgClass
+                ? "bg-white/90"
                 : status === "pending"
                     ? "bg-gray-200 grayscale"
                     : "bg-gray-100 grayscale opacity-50";
@@ -51,7 +51,7 @@ export function TodayStrip({ medications, selectedId, onSelect, className }: Pro
                         isSelected ? "border-primary" : "border-transparent"
                     } ${tone}`}
                 >
-                    {visual.emoji}
+                    <MedicationIcon {...appearanceOf(med)} size={44} />
                     {!isCompleted && status === "partial" && med.today && (
                         <span className="absolute -top-1.5 -right-1.5 rounded-full bg-primary px-1.5 py-0.5 text-[10px] font-semibold text-primary-foreground">
                             {med.today.taken}/{med.today.expected}

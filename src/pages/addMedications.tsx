@@ -8,6 +8,8 @@ import { CalendarDays, Clock, FlaskConical, Pill, Repeat } from "lucide-react";
 import { GlassCard } from "../components/glassCard";
 import { Field } from "../components/field";
 import { SegmentedControl } from "../components/segmentedControl";
+import { MedicationIcon } from "../components/medicationIcon";
+import { MEDICATION_COLORS, MEDICATION_FORMS, appearanceOf, categoryForForm, type MedicationForm } from "../lib/medicationAppearance";
 
 const WEEKDAYS: { label: string; value: number }[] = [
     { label: "Dom", value: 0 },
@@ -27,7 +29,9 @@ export function AddMedication() {
 
     const [name, setName] = useState(editingMedication?.name ?? "");
     const [dosage, setDosage] = useState(editingMedication?.dosage ?? "");
-    const [category, setCategory] = useState<"pill" | "drop" | "vitamin">(editingMedication?.category ?? "pill");
+    const initialAppearance = appearanceOf(editingMedication ?? {});
+    const [form, setForm] = useState<MedicationForm>(initialAppearance.form);
+    const [color, setColor] = useState(initialAppearance.color);
     const [scheduleType, setScheduleType] = useState<"fixed" | "weekly" | "interval">(editingMedication?.scheduleType ?? "fixed");
     const [daysOfWeek, setDaysOfWeek] = useState<number[]>(editingMedication?.daysOfWeek ?? [1, 3, 5]);
     const [fixedTime, setFixedTime] = useState(editingMedication?.fixedTime ?? "08:00");
@@ -77,7 +81,10 @@ export function AddMedication() {
             const body: Record<string, unknown> = {
                 name,
                 dosage,
-                category,
+                // The server derives category from form; sent too for older API versions.
+                category: categoryForForm(form),
+                form,
+                color,
                 scheduleType,
                 startDate: new Date().toISOString(),
             };
@@ -135,18 +142,54 @@ export function AddMedication() {
                             <Field label="Dosagem" htmlFor="med-dosage" icon={FlaskConical}>
                                 <Input id="med-dosage" required placeholder="Ex: 10mg" className="pl-11" value={dosage} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setDosage(e.target.value)} />
                             </Field>
-                            <div className="flex flex-col gap-1.5">
-                                <span className="text-[13px] font-medium text-gray-700">Categoria</span>
-                                <SegmentedControl
-                                    ariaLabel="Categoria"
-                                    value={category}
-                                    onChange={setCategory}
-                                    options={[
-                                        { value: "pill", label: "💊 Pílula" },
-                                        { value: "drop", label: "💧 Gota" },
-                                        { value: "vitamin", label: "☀️ Vitamina" },
-                                    ]}
-                                />
+                            <div className="flex flex-col gap-2">
+                                <span className="text-[13px] font-medium text-gray-700">Forma e cor</span>
+                                <div className="flex items-center gap-4 rounded-2xl bg-white/50 p-3">
+                                    <div className="flex size-20 shrink-0 items-center justify-center rounded-2xl bg-white/90">
+                                        <MedicationIcon form={form} color={color} size={68} />
+                                    </div>
+                                    <p className="text-sm text-gray-600">
+                                        {MEDICATION_FORMS.find((f) => f.value === form)?.label}
+                                        {" · "}
+                                        {MEDICATION_COLORS.find((c) => c.value === color)?.label ?? "Cor personalizada"}
+                                    </p>
+                                </div>
+                                <div role="radiogroup" aria-label="Forma" className="grid grid-cols-4 gap-2">
+                                    {MEDICATION_FORMS.map((f) => (
+                                        <button
+                                            key={f.value}
+                                            type="button"
+                                            role="radio"
+                                            aria-checked={form === f.value}
+                                            onClick={() => setForm(f.value)}
+                                            className={`flex flex-col items-center gap-1 rounded-2xl p-2 text-[11px] leading-tight transition-all ${
+                                                form === f.value
+                                                    ? "bg-white text-gray-900 shadow-[0_2px_10px_rgba(16,24,40,0.08)] ring-2 ring-primary"
+                                                    : "bg-white/40 text-gray-500 hover:bg-white/70"
+                                            }`}
+                                        >
+                                            <MedicationIcon form={f.value} color={color} size={36} />
+                                            {f.label}
+                                        </button>
+                                    ))}
+                                </div>
+                                <div role="radiogroup" aria-label="Cor" className="flex flex-wrap gap-2">
+                                    {MEDICATION_COLORS.map((c) => (
+                                        <button
+                                            key={c.value}
+                                            type="button"
+                                            role="radio"
+                                            aria-checked={color === c.value}
+                                            aria-label={c.label}
+                                            title={c.label}
+                                            onClick={() => setColor(c.value)}
+                                            className={`size-8 rounded-full border border-gray-900/10 transition-all ${
+                                                color === c.value ? "ring-2 ring-primary ring-offset-2" : "hover:scale-110"
+                                            }`}
+                                            style={{ backgroundColor: c.value }}
+                                        />
+                                    ))}
+                                </div>
                             </div>
                             <Field label="Por quantos dias?" htmlFor="med-duration" icon={CalendarDays} hint="Conforme a receita. Hoje conta como o dia 1.">
                                 <Input

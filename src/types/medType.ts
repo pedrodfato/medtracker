@@ -26,6 +26,8 @@ id: string;
     name: string;
     dosage: string;
     category: 'pill' | 'drop' | 'vitamin';
+    form?: string | null;
+    color?: string | null;
     scheduleType: 'fixed' | 'interval' | 'weekly';
     intervalHours: number | null;
     fixedTime: string | null;

@@ -4,7 +4,9 @@ import type { Medication } from "../types/medType";
 import { EllipsisVertical, Pencil, Plus, Search, Trash2 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { API_URL } from "../lib/api";
-import { getMedicationVisual, type MedicationCategory } from "../lib/medicationVisuals";
+import type { MedicationCategory } from "../lib/medicationVisuals";
+import { MedicationIcon } from "../components/medicationIcon";
+import { appearanceOf } from "../lib/medicationAppearance";
 import { Button } from "../components/button";
 
 const CATEGORY_FILTERS: { label: string; value: MedicationCategory }[] = [
@@ -119,11 +121,10 @@ export function MedicationList() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 w-full">
                 {filteredMedications.map((med) => {
-                    const visual = getMedicationVisual(med.category as MedicationCategory);
                     return (
                         <div key={med.id} className="glass relative flex gap-3 rounded-[24px] p-4">
-                            <div className={`w-18 h-18 rounded-2xl ${visual.bgClass} flex items-center justify-center shrink-0 text-3xl`}>
-                                {visual.emoji}
+                            <div className="flex h-18 w-18 shrink-0 items-center justify-center rounded-2xl bg-white/80">
+                                <MedicationIcon {...appearanceOf(med)} size={58} />
                             </div>
                             <div className="flex flex-col items-start">
                                 <h3 className="text-[18px] font-semibold tracking-tight">{med.name}</h3>

@@ -3,7 +3,8 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { Button } from "../components/button";
 import { GlassCard } from "../components/glassCard";
 import { API_URL } from "../lib/api";
-import { getMedicationVisual, type MedicationCategory } from "../lib/medicationVisuals";
+import { MedicationIcon } from "../components/medicationIcon";
+import { appearanceOf } from "../lib/medicationAppearance";
 import type { Medication } from "../types/medType";
 
 export function Reminder() {
@@ -26,7 +27,6 @@ export function Reminder() {
 
     if (!medication) return null;
 
-    const visual = getMedicationVisual(medication.category as MedicationCategory);
 
     const handleTaken = async () => {
         await fetch(`${API_URL}/medication/${medication.id}/take`, {
@@ -51,8 +51,8 @@ export function Reminder() {
             <div className="relative flex items-center justify-center">
                 <span className="absolute w-48 h-48 rounded-full bg-primary/10 animate-ping" />
                 <span className="absolute w-36 h-36 rounded-full bg-primary/20" />
-                <div className={`relative w-28 h-28 rounded-full ${visual.bgClass} flex items-center justify-center text-5xl`}>
-                    {visual.emoji}
+                <div className="relative flex h-28 w-28 items-center justify-center rounded-full bg-white/90">
+                    <MedicationIcon {...appearanceOf(medication)} size={84} />
                 </div>
             </div>
 

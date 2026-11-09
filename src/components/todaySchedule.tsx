@@ -1,7 +1,8 @@
 import { Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import type { Medication } from "../types/medType";
-import { getMedicationVisual, type MedicationCategory } from "../lib/medicationVisuals";
+import { MedicationIcon } from "./medicationIcon";
+import { appearanceOf } from "../lib/medicationAppearance";
 import { GlassCard } from "./glassCard";
 
 function timeOf(med: Medication): string {
@@ -39,12 +40,11 @@ export function TodaySchedule({ medications, className }: Props) {
             ) : (
                 <ul className="flex flex-col divide-y divide-gray-900/5">
                     {items.map(({ med, time }) => {
-                        const visual = getMedicationVisual(med.category as MedicationCategory);
                         const status = statusOf(med);
                         return (
                             <li key={med.id} className="flex items-center gap-3 py-3">
-                                <span className={`flex size-10 shrink-0 items-center justify-center rounded-xl text-xl ${visual.bgClass}`}>
-                                    {visual.emoji}
+                                <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-white/80">
+                                    <MedicationIcon {...appearanceOf(med)} size={34} />
                                 </span>
                                 <div className="min-w-0 flex-1">
                                     <p className="truncate text-sm font-medium text-gray-900">{med.name}</p>

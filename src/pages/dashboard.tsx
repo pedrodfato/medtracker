@@ -8,7 +8,8 @@ import { CalendarCheck, Flame, Plus, TrendingUp, TriangleAlert } from "lucide-re
 import type { Medication } from "../types/medType";
 import { API_URL } from "../lib/api";
 import { authClient } from "../lib/auth-client";
-import { getMedicationVisual, type MedicationCategory } from "../lib/medicationVisuals";
+import { MedicationIcon } from "../components/medicationIcon";
+import { appearanceOf } from "../lib/medicationAppearance";
 import { formatTimeUntilNextDose } from "../lib/formatTimeUntilNextDose";
 import { Button } from "../components/button";
 import { buttonClasses } from "../components/buttonStyles";
@@ -239,8 +240,8 @@ export function Dashboard() {
                             {sortedMedications.map((med) => (
                                 <SwiperSlide key={med.id}>
                                     <button onClick={openReminder} className="mb-4 flex w-full items-center gap-4 text-left">
-                                        <div className={`flex h-20 w-20 shrink-0 items-center justify-center rounded-2xl text-3xl ${getMedicationVisual(med.category as MedicationCategory).bgClass}`}>
-                                            {getMedicationVisual(med.category as MedicationCategory).emoji}
+                                        <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-2xl bg-white/80">
+                                            <MedicationIcon {...appearanceOf(med)} size={66} />
                                         </div>
                                         <div className="flex flex-1 flex-col items-start">
                                             <h3 className="m-0 text-2xl font-semibold text-gray-900">{med.name}</h3>

@@ -1,22 +1,27 @@
 import logo from '../assets/logo.webp'
 import pill from '../assets/pill.webp'
 import {LinkButton} from '../components/LinkButton'
+import { GlassCard } from '../components/glassCard'
 
 export function OnBoarding() {
     return (
-        <main className="flex flex-col min-h-screen items-center justify-around bg-linear-to-b from-[#EFF7D0] to-[#EFF3F6] to-65% px-8">
-            <img src={logo} width={250} alt="Logo" />
-            <div className="flex flex-col items-center text-center max-w-md mb-15">
-             <img className="drop-shadow-[0_25px_25px_rgba(0,0,0,0.25)] mb-5 w-[150px] md:w-[200px]" src={pill} alt="Pill" />
-            <h1 className="text-black text-4xl font-regular">Nunca esqueça seu remédio denovo</h1>
-            <p className="text-black text-lg font-regular">Sua companhia pessoal para gerenciar seus remédios diarios, feito para facilitar sua vida</p>
-            <LinkButton to="/register" variant="primary" className="w-full mt-10">
-                Criar Conta
-            </LinkButton>
-            <LinkButton to="/login" variant="inverted" className="w-full mt-3">
-                Eu já tenho uma conta
-            </LinkButton>
-            </div>
+        <main className="flex min-h-screen items-center justify-center px-6 py-10">
+            <GlassCard className="glass-strong flex w-full max-w-md flex-col items-center gap-6 p-8 text-center lg:max-w-lg lg:p-12">
+                <img src={logo} width={200} alt="Logo" />
+                <img className="w-[140px] drop-shadow-[0_30px_40px_rgba(47,158,91,0.35)] md:w-[180px]" src={pill} alt="Pill" />
+                <div className="flex flex-col gap-3">
+                    <h1 className="m-0 font-heading text-4xl font-semibold tracking-tight text-gray-900">Nunca esqueça seu remédio de novo</h1>
+                    <p className="text-lg text-gray-600">Sua companhia pessoal para gerenciar seus remédios diários, feita para facilitar sua vida.</p>
+                </div>
+                <div className="flex w-full flex-col gap-3">
+                    <LinkButton to="/register" variant="primary" className="w-full">
+                        Criar Conta
+                    </LinkButton>
+                    <LinkButton to="/login" variant="secondary" className="w-full">
+                        Eu já tenho uma conta
+                    </LinkButton>
+                </div>
+            </GlassCard>
         </main>
     )
 }

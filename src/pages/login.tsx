@@ -6,6 +6,9 @@ import { useNavigate, Link } from "react-router-dom"; // Dica: use Link no lugar
 import pill1 from '../assets/pill-1.webp'
 import logo2 from '../assets/logo2.webp'
 import { Button } from '../components/button'
+import { Lock, Mail } from "lucide-react"
+import { GlassCard } from "../components/glassCard"
+import { Field } from "../components/field"
 
 export function Login() {
     const navigate = useNavigate();
@@ -36,59 +39,71 @@ export function Login() {
     }
 
     return (
-        <div className="flex flex-col bg-linear-to-b from-[#F2F3F8] to-[#FFFFFF] to-35% min-h-screen items-center justify-around w-full px-4">
-            <img src={logo2} width={200} alt="Logo" />
-            
-            <div className="flex flex-col items-center justify-center w-full max-w-sm px-4">
-                
-                <div className="relative inline-block 
-                    after:content-[''] after:absolute after:-bottom-6 after:left-1/2 after:-translate-x-1/2
-                    after:w-34 after:h-2 after:bg-black/80 after:rounded-full
-                    after:blur-[19px] after:opacity-80">
-                    <img src={pill1} alt="Pill" className="relative z-10 mb-5 w-[100px] md:w-[200px]" />
+        <div className="grid min-h-screen lg:grid-cols-2">
+            <aside className="hidden flex-col justify-between p-12 lg:flex">
+                <img src={logo2} alt="MedTracker" className="w-40" />
+                <div className="flex flex-col gap-6">
+                    <img src={pill1} alt="" className="w-40 drop-shadow-[0_30px_40px_rgba(47,158,91,0.35)]" />
+                    <h2 className="m-0 max-w-md font-heading text-5xl font-semibold leading-tight tracking-tight text-gray-900">
+                        Seu tratamento, no tempo certo.
+                    </h2>
+                    <p className="max-w-sm text-gray-600">Lembretes, histórico e adesão de cada remédio num só lugar.</p>
                 </div>
-                <h1 className="text-black text-3xl font-regular mb-6 mt-15">Bem-vindo de volta!</h1>
-              
-                <form onSubmit={handleLogin} className="w-full flex flex-col gap-4">
-                    <Input
-                        id="email"
-                        type="email"
-                        placeholder="Endereço de Email"
-                        required
-                        value={email}
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
-                    />
-                    <Input
-                        id="password"
-                        type={showPassword ? "text" : "password"}
-                        required
-                        placeholder="Senha"
-                        value={password}
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
-                    />
-                    <label className="flex items-center gap-2 text-sm text-gray-600 select-none">
-                        <Checkbox
-                            checked={showPassword}
-                            onCheckedChange={(checked) => setShowPassword(checked === true)}
-                        />
-                        Mostrar senha
-                    </label>
+                <p className="text-sm text-gray-500">MedTracker</p>
+            </aside>
 
-                    <div className="flex items-center">
-                        <Link to="/esqueci-senha" className="ml-auto inline-block text-sm underline-offset-4 hover:underline">
-                            Esqueceu a senha?
-                        </Link>
-                    </div>
+            <main className="flex items-center justify-center px-4 py-10">
+                <GlassCard className="glass-strong w-full max-w-md p-8">
+                    <img src={logo2} alt="MedTracker" className="mx-auto mb-4 w-32 lg:hidden" />
+                    <h1 className="m-0 font-heading text-3xl font-semibold tracking-tight text-gray-900">Bem-vindo de volta!</h1>
+                    <p className="mt-1 mb-6 text-sm text-gray-500">Entre para ver seus remédios de hoje.</p>
 
-                    {errorMsg && <p className="text-red-500 text-sm text-center">{errorMsg}</p>}
-                    <Button type="submit" className="w-full mt-4">
-                        Login
-                    </Button>
-                    <p className="mt-2 mb-10 text-sm">Não tem uma conta? <Link to="/register" className="text-[#ABD43A] font-bold">Cadastre-se</Link></p>
-                </form>
-            </div>
+                    <form onSubmit={handleLogin} className="flex w-full flex-col gap-4">
+                        <Field label="E-mail" htmlFor="email" icon={Mail}>
+                            <Input
+                                id="email"
+                                type="email"
+                                placeholder="Endereço de Email"
+                                required
+                                className="pl-11"
+                                value={email}
+                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
+                            />
+                        </Field>
+                        <Field label="Senha" htmlFor="password" icon={Lock}>
+                            <Input
+                                id="password"
+                                type={showPassword ? "text" : "password"}
+                                required
+                                placeholder="Senha"
+                                className="pl-11"
+                                value={password}
+                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
+                            />
+                        </Field>
+                        <div className="flex items-center justify-between">
+                            <label className="flex items-center gap-2 text-sm text-gray-600 select-none">
+                                <Checkbox
+                                    checked={showPassword}
+                                    onCheckedChange={(checked) => setShowPassword(checked === true)}
+                                />
+                                Mostrar senha
+                            </label>
+                            <Link to="/esqueci-senha" className="text-sm text-gray-600 underline-offset-4 hover:underline">
+                                Esqueceu a senha?
+                            </Link>
+                        </div>
 
-     
+                        {errorMsg && <p className="text-center text-sm text-red-500">{errorMsg}</p>}
+                        <Button type="submit" className="mt-2 w-full">
+                            Login
+                        </Button>
+                        <p className="text-center text-sm text-gray-600">
+                            Não tem uma conta? <Link to="/register" className="font-semibold text-[#5c7d00]">Cadastre-se</Link>
+                        </p>
+                    </form>
+                </GlassCard>
+            </main>
         </div>
     )
 }

@@ -142,7 +142,7 @@ export function Progress() {
                 <>
                     <TodayStrip medications={medications} selectedId={selectedId} onSelect={handleSelect} />
 
-                    <section className="p-4 rounded-[24px] bg-white/70 shadow-[0_4px_20px_rgba(0,0,0,0.06)] flex flex-col gap-3">
+                    <section className="p-4 rounded-[24px] bg-white/70 shadow-[0_4px_20px_rgba(0,0,0,0.06)] flex flex-col gap-3 text-start">
                         <h2 className="text-lg font-semibold text-gray-900">
                             Histórico{selectedMedication ? ` · ${selectedMedication.name}` : ""}
                         </h2>

@@ -35,4 +35,13 @@ export default defineConfig({
       "@": path.resolve(import.meta.dirname, "./src"),
     },
   },
+  server: {
+    // Same path as the vercel.json rewrite, so dev also uses first-party cookies.
+    proxy: {
+      '/backend': {
+        target: 'http://localhost:3333',
+        rewrite: (p) => p.replace(/^\/backend/, ''),
+      },
+    },
+  },
 })

@@ -13,7 +13,7 @@ const NAV = [
 export function Sidebar() {
     return (
         <aside className="sticky top-0 hidden h-screen w-72 shrink-0 p-5 lg:block">
-            <div className="glass flex h-full flex-col gap-8 rounded-[28px] p-6">
+            <div className="glass-menu flex h-full flex-col gap-8 rounded-[28px] p-6">
                 <img src={logo} alt="MedTracker" className="h-8 w-auto self-start" />
                 <nav className="flex flex-col gap-1" aria-label="Navegação principal">
                     {NAV.map(({ to, label, icon: Icon }) => (

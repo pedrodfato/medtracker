@@ -268,3 +268,12 @@
 .swiper {
   --swiper-pagination-color: #5c7d00;
 }
+
+/* Navigation menus: nearly opaque so the logo and labels stay crisp over the blobs. */
+@utility glass-menu {
+  background-color: rgb(255 255 255 / 0.9);
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  border: 1px solid rgb(255 255 255 / 0.95);
+  box-shadow: 0 16px 48px rgb(31 45 20 / 0.1), inset 0 1px 0 rgb(255 255 255 / 0.8);
+}

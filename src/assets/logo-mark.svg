@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="32 63.5 160 160">
+  <defs>
+    <linearGradient id="mt-arc" x1="50" y1="110" x2="180" y2="180" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#E6F9BF"/>
+      <stop offset="0.4" stop-color="#B9EC3C"/>
+      <stop offset="0.75" stop-color="#9FE41E"/>
+      <stop offset="1" stop-color="#3ED83E"/>
+    </linearGradient>
+    <linearGradient id="mt-legL" x1="40" y1="128" x2="71" y2="203" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#C3F04E"/>
+      <stop offset="1" stop-color="#A6E631"/>
+    </linearGradient>
+    <linearGradient id="mt-legR" x1="119" y1="128" x2="152" y2="203" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#9EE776"/>
+      <stop offset="1" stop-color="#1ECB62"/>
+    </linearGradient>
+    <linearGradient id="mt-diagL" x1="60" y1="140" x2="95" y2="180" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#A3E23A"/>
+      <stop offset="1" stop-color="#7CCB2E"/>
+    </linearGradient>
+    <linearGradient id="mt-diagR" x1="94" y1="178" x2="136" y2="142" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#AEEA4C"/>
+      <stop offset="1" stop-color="#8EE06A"/>
+    </linearGradient>
+  </defs>
+  <path d="M 60 118 A 64.3 64.3 0 0 1 172.7 176.6" fill="none" stroke="url(#mt-arc)" stroke-width="15.5"/>
+  <circle cx="172.7" cy="176.6" r="7.75" fill="url(#mt-arc)"/>
+  <path d="M 55.5 143.5 L 96 177.5" stroke="url(#mt-diagL)" stroke-width="29" stroke-linecap="round"/>
+  <rect x="40" y="128" width="31" height="75" rx="15.5" fill="url(#mt-legL)"/>
+  <path d="M 96 177.5 L 135.5 143.5" stroke="url(#mt-diagR)" stroke-width="29" stroke-linecap="round"/>
+  <rect x="120" y="128" width="31" height="75" rx="15.5" fill="url(#mt-legR)"/>
+</svg>

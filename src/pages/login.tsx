@@ -4,7 +4,7 @@ import { useState } from "react"
 import { authClient } from "../lib/auth-client"
 import { useNavigate, Link } from "react-router-dom"; // Dica: use Link no lugar de <a>
 import pill1 from '../assets/pill-1.webp'
-import logo2 from '../assets/logo2.webp'
+import { Logo } from '../components/logo'
 import { Button } from '../components/button'
 import { Lock, Mail } from "lucide-react"
 import { GlassCard } from "../components/glassCard"
@@ -41,7 +41,7 @@ export function Login() {
     return (
         <div className="grid min-h-screen lg:grid-cols-2">
             <aside className="hidden flex-col justify-between p-12 lg:flex">
-                <img src={logo2} alt="MedTracker" className="w-40" />
+                <Logo className="self-start text-2xl" />
                 <div className="flex flex-col gap-6">
                     <img src={pill1} alt="" className="w-40 drop-shadow-[0_30px_40px_rgba(47,158,91,0.35)]" />
                     <h2 className="m-0 max-w-md font-heading text-5xl font-semibold leading-tight tracking-tight text-gray-900">
@@ -54,7 +54,7 @@ export function Login() {
 
             <main className="flex items-center justify-center px-4 py-10">
                 <GlassCard className="glass-strong w-full max-w-md p-8">
-                    <img src={logo2} alt="MedTracker" className="mx-auto mb-4 w-32 lg:hidden" />
+                    <div className="mb-5 flex justify-center lg:hidden"><Logo className="text-xl" /></div>
                     <h1 className="m-0 font-heading text-3xl font-semibold tracking-tight text-gray-900">Bem-vindo de volta!</h1>
                     <p className="mt-1 mb-6 text-sm text-gray-500">Entre para ver seus remédios de hoje.</p>
 

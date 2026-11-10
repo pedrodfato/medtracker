@@ -3,10 +3,15 @@ import { Navigate } from "react-router-dom"
 import { useTimedOut } from "../hooks/useTimedOut"
 import { Button } from "./button"
 import { SplashScreen } from "./splashScreen"
+import { hasSessionHint, useSyncSessionHint } from "../lib/sessionHint"
 
 export const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
-    const {data: session, isPending} = authClient.useSession();
-    const timedOut = useTimedOut(isPending, 45000);
+    const {data: session, isPending, error} = authClient.useSession();
+    useSyncSessionHint(!!session, isPending, !!error);
+    // Signed in on this device before: show the page now and let the check
+    // finish in the background (an expired session still redirects below).
+    const optimistic = isPending && hasSessionHint();
+    const timedOut = useTimedOut(isPending && !optimistic, 45000);
 
     if (isPending && timedOut) {
         return (
@@ -15,6 +20,10 @@ export const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
                 <Button onClick={() => window.location.reload()}>Tentar novamente</Button>
             </div>
         )
+    }
+
+    if (optimistic) {
+        return <>{children}</>
     }
 
     if (isPending) {

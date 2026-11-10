@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { authClient } from "../lib/auth-client";
+import { setSessionHint } from "../lib/sessionHint";
 import { Input } from "@/components/ui/input";
 import { Button } from "../components/button";
 import { inputClasses } from "@/components/ui/input";
@@ -82,6 +83,7 @@ export function Profile() {
 
     const handleLogout = async () => {
         await authClient.signOut();
+        setSessionHint(false);
         navigate("/");
     };
 

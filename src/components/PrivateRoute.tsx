@@ -2,6 +2,7 @@ import { authClient } from "../lib/auth-client"
 import { Navigate } from "react-router-dom"
 import { useTimedOut } from "../hooks/useTimedOut"
 import { Button } from "./button"
+import { SplashScreen } from "./splashScreen"
 
 export const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
     const {data: session, isPending} = authClient.useSession();
@@ -17,7 +18,7 @@ export const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
     }
 
     if (isPending) {
-        return <div>Carregando...</div>
+        return <SplashScreen />
     }
 
     if (!session) {
